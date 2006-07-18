@@ -2,7 +2,7 @@
 #include <cassert>
 #include <vector>
 #include <iterator>
-#include "utf8.h"
+#include "../../source/utf8.h"
 using namespace utf8;
 using namespace std;
 
