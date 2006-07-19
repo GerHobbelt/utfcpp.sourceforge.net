@@ -51,10 +51,23 @@ check (!is_valid(udbff_dc00, udbff_dc00 + 6));
 unsigned char udbff_dfff[] = {0xed, 0xaf, 0xbf, 0xed, 0xbf, 0xbf};
 check (!is_valid(udbff_dfff, udbff_dfff + 6));
 
-// Other illegal code positions 
+// Other illegal code points 
 unsigned char ufffe[] = {0xef, 0xbf, 0xbe};
 check (!is_valid(ufffe, ufffe + 3));
 
 unsigned char uffff[] = {0xef, 0xbf, 0xbf};
 check (!is_valid(uffff, uffff + 3));
+}
+
+// [ 1525236 ] utf8::is_valid does not detect overlong sequences
+void id_1525236 ()
+{
+unsigned char u2f_2bytes[] = {0xc0, 0xaf};
+check (!is_valid(u2f_2bytes, u2f_2bytes + 2));
+
+unsigned char u2f_3bytes[] = {0xe0, 0x80, 0xaf};
+check (!is_valid(u2f_3bytes, u2f_3bytes + 3));
+
+unsigned char u2f_4bytes[] = {0xf0, 0x80, 0x80, 0xaf};
+check (!is_valid(u2f_4bytes, u2f_4bytes + 4));
 }
