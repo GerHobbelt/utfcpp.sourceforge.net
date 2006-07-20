@@ -129,7 +129,7 @@ namespace internal
         else 
             return INVALID_LEAD;
         // Do we have enough memory?     
-        if (end - it < sequence_length)
+        if (size_t(end - it) < sequence_length)
             return NOT_ENOUGH_ROOM;
         
         // Check trail octets and calculate the code point
@@ -262,73 +262,20 @@ namespace internal
     template <typename octet_iterator>
     uint32_t next(octet_iterator& it, octet_iterator end)
     {
-        uint32_t cp = internal::mask8(*it);
-        if (cp < 0x80) 
-            ;
-        else if ((internal::mask8(*it) >> 5) == 0x6) {
-            if (++it != end) { 
-                if (internal::is_trail(*it)) { 
-                    cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
-                }
-                else
-                    throw invalid_utf8 (*it);
-            }
-            else
+        uint32_t cp = 0;
+        internal::utf_error err_code = internal::validate_next(it, end, &cp);
+        switch (err_code) {
+            case internal::OK :
+                break;
+            case internal::NOT_ENOUGH_ROOM :
                 throw not_enough_room();
+            case internal::INVALID_LEAD :
+            case internal::INCOMPLETE_SEQUENCE :
+            case internal::OVERLONG_SEQUENCE :
+                throw invalid_utf8(*it);
+            case internal::INVALID_CODE_POINT :
+                throw invalid_code_point(cp);
         }
-        else if ((internal::mask8(*it) >> 4) == 0xe) { 
-            if (++it != end) { 
-                if (internal::is_trail(*it)) {
-                    cp = ((cp << 12) & 0xffff) + ((internal::mask8(*it) << 6) & 0xfff);
-                    if (++it != end) {
-                        if (internal::is_trail(*it)) {
-                            cp += (*it) & 0x3f;
-                        }
-                        else
-                            throw invalid_utf8 (*it);
-                    }
-                    else
-                        throw not_enough_room();
-                }
-                else
-                    throw invalid_utf8 (*it);
-            }
-            else
-                throw not_enough_room();
-        }    
-        else if ((internal::mask8(*it) >> 3) == 0x1e) {
-            if (++it != end) {
-                if (internal::is_trail(*it)) {
-                    cp = ((cp << 18) & 0x1fffff) + (internal::mask8(*it) << 12) & 0x3ffff;                
-                    if (++it != end) {
-                        if (internal::is_trail(*it)) {
-                            cp += (internal::mask8(*it) << 6) & 0xfff;
-                            if (++it != end) {
-                                if (internal::is_trail(*it)) {
-                                    cp += (*it) & 0x3f; 
-                                }
-                                else
-                                    throw invalid_utf8 (*it);
-                            }
-                            else
-                                throw not_enough_room();
-                        }
-                        else
-                            throw invalid_utf8 (*it);
-                    }
-                    else
-                        throw not_enough_room();
-                }
-                else
-                    throw invalid_utf8 (*it);
-            }
-            else
-                throw not_enough_room();
-        }
-        ++it;
-        if (cp > internal::CODE_POINT_MAX || internal::is_surrogate(cp))
-            throw invalid_code_point(cp);
-
         return cp;        
     }
 
