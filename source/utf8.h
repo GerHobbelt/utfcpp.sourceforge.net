@@ -72,7 +72,9 @@ namespace utf8
 
 
 
-    
+// Helper code - not intended to be directly called by the library users. May be changed at any time
+namespace internal
+{    
     // Unicode constants
     // Leading (high) surrogates: 0xd800 - 0xdbff
     // Trailing (low) surrogates: 0xdc00 - 0xdfff
@@ -86,10 +88,6 @@ namespace utf8
     // Maximum valid value for a Unicode code point
     const uint32_t CODE_POINT_MAX      = 0x0010ffff;
 
-    // Byte order mark
-    const uint8_t bom[] = {0xef, 0xbb, 0xbf}; 
-
-    /// Helper functions - not intended to be directly called by the library users
     template<typename octet_type>
     inline uint8_t mask8(octet_type oc)
     {
@@ -111,63 +109,66 @@ namespace utf8
     {
         return (cp >= LEAD_SURROGATE_MIN && cp <= TRAIL_SURROGATE_MAX);
     }
-
-    
+} // namespace internal 
     
     /// The library API - functions intended to be called by the users
+ 
+    // Byte order mark
+    const uint8_t bom[] = {0xef, 0xbb, 0xbf}; 
+
     template <typename octet_iterator>
     octet_iterator find_invalid(octet_iterator start, octet_iterator end)
     {
         octet_iterator result = start;
         while (result != end) {
-            if (mask8(*result) > 0xf4)
+            if (internal::mask8(*result) > 0xf4)
                 break;
-            if (mask8(*result) < 0x80) 
+            if (internal::mask8(*result) < 0x80) 
                 ;
-            else if ((mask8(*result) >> 5) == 0x6) {
-                uint8_t lead = mask8(*result);
+            else if ((internal::mask8(*result) >> 5) == 0x6) {
+                uint8_t lead = internal::mask8(*result);
                 if (++result == end)
                     return (--result);
-                if (!is_trail(*result))
+                if (!internal::is_trail(*result))
                     return result;
                 switch (lead) {
                     case 0xe0:
-                        if ((mask8(*result)) < 0xa0)
+                        if ((internal::mask8(*result)) < 0xa0)
                             return result; 
                         break;
                     case 0xed:
-                        if ((mask8(*result)) > 0x9F)
+                        if ((internal::mask8(*result)) > 0x9F)
                             return result;
                         break;
                     case 0xf0: 
-                        if ((mask8(*result)) < 0x90)
+                        if ((internal::mask8(*result)) < 0x90)
                             return result;
                         break;
                 }
             }
-            else if ((mask8(*result) >> 4) == 0xe) { 
+            else if ((internal::mask8(*result) >> 4) == 0xe) { 
                 if (++result == end) 
                     break;                
-                if (!is_trail(*result))
+                if (!internal::is_trail(*result))
                     break;
                 if (++result == end)
                     break;
-                if (!is_trail(*result))
+                if (!internal::is_trail(*result))
                     break;
             } 
 
-            else if ((mask8(*result) >> 3) == 0x1e) {
+            else if ((internal::mask8(*result) >> 3) == 0x1e) {
                 if (++result == end)
                     break;
-                if (!is_trail(*result))
+                if (!internal::is_trail(*result))
                     break;
                 if (++result == end) 
                     break;
-                if (!is_trail(*result))
+                if (!internal::is_trail(*result))
                     break;
                 if (++result == end)
                     break;
-                if (!is_trail(*result))
+                if (!internal::is_trail(*result))
                     break;
             }
             else
@@ -187,9 +188,9 @@ namespace utf8
     bool is_bom (octet_iterator it)
     {
         return (
-            (mask8(*it++)) == bom[0] &&
-            (mask8(*it++)) == bom[1] &&
-            (mask8(*it))   == bom[2]
+            (internal::mask8(*it++)) == bom[0] &&
+            (internal::mask8(*it++)) == bom[1] &&
+            (internal::mask8(*it))   == bom[2]
            );
     }
     template <typename octet_iterator>
@@ -198,7 +199,7 @@ namespace utf8
         if (cp < 0x80)                        // one octet
             *(result++) = static_cast<uint8_t>(cp);  
         else if (cp < 0x800) {                // two octets
-            if (is_surrogate(cp)) 
+            if (internal::is_surrogate(cp)) 
                 throw invalid_code_point(cp);
 
             *(result++) = static_cast<uint8_t>((cp >> 6)   | 0xc0);
@@ -209,7 +210,7 @@ namespace utf8
             *(result++) = static_cast<uint8_t>((cp >> 6)   | 0x80);
             *(result++) = static_cast<uint8_t>((cp & 0x3f) | 0x80);
         }
-        else if (cp <= CODE_POINT_MAX) {      // four octets
+        else if (cp <= internal::CODE_POINT_MAX) {      // four octets
             *(result++) = static_cast<uint8_t>((cp >> 18)  | 0xf0);
             *(result++) = static_cast<uint8_t>((cp >> 12)  | 0x80);
             *(result++) = static_cast<uint8_t>((cp >> 6)   | 0x80);
@@ -224,12 +225,12 @@ namespace utf8
     template <typename octet_iterator>
     uint32_t next(octet_iterator& it, octet_iterator end)
     {
-        uint32_t cp = mask8(*it);
+        uint32_t cp = internal::mask8(*it);
         if (cp < 0x80) 
             ;
-        else if ((mask8(*it) >> 5) == 0x6) {
+        else if ((internal::mask8(*it) >> 5) == 0x6) {
             if (++it != end) { 
-                if (is_trail(*it)) { 
+                if (internal::is_trail(*it)) { 
                     cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
                 }
                 else
@@ -238,12 +239,12 @@ namespace utf8
             else
                 throw not_enough_room();
         }
-        else if ((mask8(*it) >> 4) == 0xe) { 
+        else if ((internal::mask8(*it) >> 4) == 0xe) { 
             if (++it != end) { 
-                if (is_trail(*it)) {
-                    cp = ((cp << 12) & 0xffff) + ((mask8(*it) << 6) & 0xfff);
+                if (internal::is_trail(*it)) {
+                    cp = ((cp << 12) & 0xffff) + ((internal::mask8(*it) << 6) & 0xfff);
                     if (++it != end) {
-                        if (is_trail(*it)) {
+                        if (internal::is_trail(*it)) {
                             cp += (*it) & 0x3f;
                         }
                         else
@@ -258,15 +259,15 @@ namespace utf8
             else
                 throw not_enough_room();
         }    
-        else if ((mask8(*it) >> 3) == 0x1e) {
+        else if ((internal::mask8(*it) >> 3) == 0x1e) {
             if (++it != end) {
-                if (is_trail(*it)) {
-                    cp = ((cp << 18) & 0x1fffff) + (mask8(*it) << 12) & 0x3ffff;                
+                if (internal::is_trail(*it)) {
+                    cp = ((cp << 18) & 0x1fffff) + (internal::mask8(*it) << 12) & 0x3ffff;                
                     if (++it != end) {
-                        if (is_trail(*it)) {
-                            cp += (mask8(*it) << 6) & 0xfff;
+                        if (internal::is_trail(*it)) {
+                            cp += (internal::mask8(*it) << 6) & 0xfff;
                             if (++it != end) {
-                                if (is_trail(*it)) {
+                                if (internal::is_trail(*it)) {
                                     cp += (*it) & 0x3f; 
                                 }
                                 else
@@ -288,7 +289,7 @@ namespace utf8
                 throw not_enough_room();
         }
         ++it;
-        if (cp > CODE_POINT_MAX || is_surrogate(cp))
+        if (cp > internal::CODE_POINT_MAX || internal::is_surrogate(cp))
             throw invalid_code_point(cp);
 
         return cp;        
@@ -299,7 +300,7 @@ namespace utf8
     uint32_t previous(octet_iterator& it, octet_iterator pass_start)
     {
         octet_iterator end = it;
-        while (is_trail(*(--it))) 
+        while (internal::is_trail(*(--it))) 
             if (it == pass_start)
                 throw invalid_utf8(*it); // error - no lead byte in the sequence
         octet_iterator temp = it;
@@ -327,13 +328,13 @@ namespace utf8
     void utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator result)
     {       
         while (start != end) {
-            uint32_t cp = mask16(*start++);
+            uint32_t cp = internal::mask16(*start++);
             // Take care of surrogate pairs first
-            if (cp >= LEAD_SURROGATE_MIN && cp <= LEAD_SURROGATE_MAX) {
+            if (cp >= internal::LEAD_SURROGATE_MIN && cp <= internal::LEAD_SURROGATE_MAX) {
                 if (start != end) {
-                    uint32_t trail_surrogate = mask16(*start++);
-                    if (trail_surrogate >= TRAIL_SURROGATE_MIN && trail_surrogate <= TRAIL_SURROGATE_MAX)
-                        cp = (cp << 10) + trail_surrogate + SURROGATE_OFFSET;                    
+                    uint32_t trail_surrogate = internal::mask16(*start++);
+                    if (trail_surrogate >= internal::TRAIL_SURROGATE_MIN && trail_surrogate <= internal::TRAIL_SURROGATE_MAX)
+                        cp = (cp << 10) + trail_surrogate + internal::SURROGATE_OFFSET;                    
                     else 
                         throw invalid_utf16(static_cast<uint16_t>(trail_surrogate));
                 }
@@ -351,8 +352,8 @@ namespace utf8
         while (start != end) {
             uint32_t cp = next(start, end);
             if (cp > 0xffff) { //make a surrogate pair
-                *result++ = static_cast<uint16_t>((cp >> 10)   + LEAD_OFFSET);
-                *result++ = static_cast<uint16_t>((cp & 0x3ff) + TRAIL_SURROGATE_MIN);
+                *result++ = static_cast<uint16_t>((cp >> 10)   + internal::LEAD_OFFSET);
+                *result++ = static_cast<uint16_t>((cp & 0x3ff) + internal::TRAIL_SURROGATE_MIN);
             }
             else
                 *result++ = static_cast<uint16_t>(cp);
@@ -400,24 +401,24 @@ namespace utf8
         template <typename octet_iterator>
         uint32_t next(octet_iterator& it)
         {
-            uint32_t cp = mask8(*it);
+            uint32_t cp = internal::mask8(*it);
             if (cp < 0x80) 
                 ;
-            else if ((mask8(*it) >> 5) == 0x6) {
+            else if ((internal::mask8(*it) >> 5) == 0x6) {
                 it++;
                 cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
             }
-            else if ((mask8(*it) >> 4) == 0xe) { 
+            else if ((internal::mask8(*it) >> 4) == 0xe) { 
                 ++it; 
-                cp = ((cp << 12) & 0xffff) + ((mask8(*it) << 6) & 0xfff);
+                cp = ((cp << 12) & 0xffff) + ((internal::mask8(*it) << 6) & 0xfff);
                 ++it;
                 cp += (*it) & 0x3f;
             }
             else if (((*it) >> 3) == 0x1e) {
                 ++it;
-                cp = ((cp << 18) & 0x1fffff) + (mask8(*it) << 12) & 0x3ffff;                
+                cp = ((cp << 18) & 0x1fffff) + (internal::mask8(*it) << 12) & 0x3ffff;                
                 ++it;
-                cp += (mask8(*it) << 6) & 0xfff;
+                cp += (internal::mask8(*it) << 6) & 0xfff;
                 ++it;
                 cp += (*it) & 0x3f; 
             }
@@ -428,7 +429,7 @@ namespace utf8
         template <typename octet_iterator>
         uint32_t previous(octet_iterator& it)
         {
-            while (is_trail(*(--it))) ;
+            while (internal::is_trail(*(--it))) ;
             octet_iterator temp = it;
             return next(temp);
         }
@@ -460,11 +461,11 @@ namespace utf8
         void utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator result)
         {       
             while (start != end) {
-                uint32_t cp = mask16(*start++);
+                uint32_t cp = internal::mask16(*start++);
             // Take care of surrogate pairs first
-                if (cp >= LEAD_SURROGATE_MIN && cp <= LEAD_SURROGATE_MAX) {
-                    uint32_t trail_surrogate = mask16(*start++);
-                    cp = (cp << 10) + trail_surrogate + SURROGATE_OFFSET;
+                if (cp >= internal::LEAD_SURROGATE_MIN && cp <= internal::LEAD_SURROGATE_MAX) {
+                    uint32_t trail_surrogate = internal::mask16(*start++);
+                    cp = (cp << 10) + trail_surrogate + internal::SURROGATE_OFFSET;
                 }
                 *result = append(cp, result);
             }         
@@ -476,8 +477,8 @@ namespace utf8
             while (start != end) {
                 uint32_t cp = next(start);
                 if (cp > 0xffff) { //make a surrogate pair
-                    *result++ = static_cast<uint16_t>((cp >> 10)   + LEAD_OFFSET);
-                    *result++ = static_cast<uint16_t>((cp & 0x3ff) + TRAIL_SURROGATE_MIN);
+                    *result++ = static_cast<uint16_t>((cp >> 10)   + internal::LEAD_OFFSET);
+                    *result++ = static_cast<uint16_t>((cp & 0x3ff) + internal::TRAIL_SURROGATE_MIN);
                 }
                 else
                     *result++ = static_cast<uint16_t>(cp);
