@@ -78,15 +78,15 @@ namespace internal
     // Unicode constants
     // Leading (high) surrogates: 0xd800 - 0xdbff
     // Trailing (low) surrogates: 0xdc00 - 0xdfff
-    const uint32_t LEAD_SURROGATE_MIN  = 0xd800;
-    const uint32_t LEAD_SURROGATE_MAX  = 0xdbff;
-    const uint32_t TRAIL_SURROGATE_MIN = 0xdc00;
-    const uint32_t TRAIL_SURROGATE_MAX = 0xdfff;
-    const uint32_t LEAD_OFFSET         = LEAD_SURROGATE_MIN - (0x10000 >> 10);
-    const uint32_t SURROGATE_OFFSET    = 0x10000 - (LEAD_SURROGATE_MIN << 10) - TRAIL_SURROGATE_MIN;
+    const uint16_t LEAD_SURROGATE_MIN  = 0xd800u;
+    const uint16_t LEAD_SURROGATE_MAX  = 0xdbffu;
+    const uint16_t TRAIL_SURROGATE_MIN = 0xdc00u;
+    const uint16_t TRAIL_SURROGATE_MAX = 0xdfffu;
+    const uint16_t LEAD_OFFSET         = LEAD_SURROGATE_MIN - (0x10000 >> 10);
+    const uint32_t SURROGATE_OFFSET    = 0x10000u - (LEAD_SURROGATE_MIN << 10) - TRAIL_SURROGATE_MIN;
 
     // Maximum valid value for a Unicode code point
-    const uint32_t CODE_POINT_MAX      = 0x0010ffff;
+    const uint32_t CODE_POINT_MAX      = 0x0010ffffu;
 
     template<typename octet_type>
     inline uint8_t mask8(octet_type oc)
@@ -109,6 +109,93 @@ namespace internal
     {
         return (cp >= LEAD_SURROGATE_MIN && cp <= TRAIL_SURROGATE_MAX);
     }
+
+    enum utf_error {OK, NOT_ENOUGH_ROOM, INVALID_LEAD, INCOMPLETE_SEQUENCE, OVERLONG_SEQUENCE, INVALID_CODE_POINT};
+
+    template <typename octet_iterator>
+    utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t* code_point = 0)
+    {
+        uint32_t cp = mask8(*it);
+        // Check the lead octet
+        size_t sequence_length;
+        if (cp < 80)
+            sequence_length = 1;
+        else if ((cp >> 5) == 0x6)
+            sequence_length = 2;
+        else if ((cp >> 4) == 0xe)
+            sequence_length = 3;
+        else if ((cp >> 3) == 0x1e)
+            sequence_length = 4;
+        else 
+            return INVALID_LEAD;
+        // Do we have enough memory?     
+        if (end - it < sequence_length)
+            return NOT_ENOUGH_ROOM;
+        
+        // Check trail octets and calculate the code point
+        switch (sequence_length) {
+            case 2:
+                if (is_trail(*(++it))) { 
+                    cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
+                }
+                else
+                    return INCOMPLETE_SEQUENCE;
+            break;
+            case 3:
+                if (is_trail(*(++it))) {
+                    cp = ((cp << 12) & 0xffff) + ((mask8(*it) << 6) & 0xfff);
+                    if (is_trail(*(++it))) {
+                        cp += (*it) & 0x3f;
+                    }
+                    else
+                        return INCOMPLETE_SEQUENCE;
+                }
+                else
+                    return INCOMPLETE_SEQUENCE;
+            break;
+            case 4:
+                if (is_trail(*(++it))) {
+                    cp = ((cp << 18) & 0x1fffff) + (mask8(*it) << 12) & 0x3ffff;                
+                    if (is_trail(*(++it))) {
+                        cp += (mask8(*it) << 6) & 0xfff;
+                        if (is_trail(*(++it))) {
+                            cp += (*it) & 0x3f; 
+                        }
+                        else
+                            return INCOMPLETE_SEQUENCE;
+                    }
+                    else
+                        return INCOMPLETE_SEQUENCE;
+                }
+                else
+                    return INCOMPLETE_SEQUENCE;
+            break;
+        }
+        // Is the code point valid?
+        if (cp > CODE_POINT_MAX || is_surrogate(cp) || mask8(cp) == 0xff || mask8(cp) == 0xfe)
+            return INVALID_CODE_POINT;
+            
+        if (code_point)
+            *code_point = cp;
+            
+        // Overlong sequence?
+        if (cp < 0x80) {
+            if (sequence_length != 1)
+                return OVERLONG_SEQUENCE;
+        }
+        else if (cp < 0x800) {
+            if (sequence_length != 2)
+                return OVERLONG_SEQUENCE;
+        }
+        else if (cp < 0x10000) {
+            if (sequence_length != 3)
+                return OVERLONG_SEQUENCE;
+        }
+           
+        ++it;
+        return OK;    
+    }
+
 } // namespace internal 
     
     /// The library API - functions intended to be called by the users
@@ -121,59 +208,9 @@ namespace internal
     {
         octet_iterator result = start;
         while (result != end) {
-            if (internal::mask8(*result) > 0xf4)
-                break;
-            if (internal::mask8(*result) < 0x80) 
-                ;
-            else if ((internal::mask8(*result) >> 5) == 0x6) {
-                uint8_t lead = internal::mask8(*result);
-                if (++result == end)
-                    return (--result);
-                if (!internal::is_trail(*result))
-                    return result;
-                switch (lead) {
-                    case 0xe0:
-                        if ((internal::mask8(*result)) < 0xa0)
-                            return result; 
-                        break;
-                    case 0xed:
-                        if ((internal::mask8(*result)) > 0x9F)
-                            return result;
-                        break;
-                    case 0xf0: 
-                        if ((internal::mask8(*result)) < 0x90)
-                            return result;
-                        break;
-                }
-            }
-            else if ((internal::mask8(*result) >> 4) == 0xe) { 
-                if (++result == end) 
-                    break;                
-                if (!internal::is_trail(*result))
-                    break;
-                if (++result == end)
-                    break;
-                if (!internal::is_trail(*result))
-                    break;
-            } 
-
-            else if ((internal::mask8(*result) >> 3) == 0x1e) {
-                if (++result == end)
-                    break;
-                if (!internal::is_trail(*result))
-                    break;
-                if (++result == end) 
-                    break;
-                if (!internal::is_trail(*result))
-                    break;
-                if (++result == end)
-                    break;
-                if (!internal::is_trail(*result))
-                    break;
-            }
-            else
-                break;
-            ++result;
+            internal::utf_error err_code = internal::validate_next(result, end);
+            if (err_code != internal::OK)
+                return result;
         }
         return result;
     }
