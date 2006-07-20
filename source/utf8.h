@@ -118,7 +118,7 @@ namespace internal
         uint32_t cp = mask8(*it);
         // Check the lead octet
         size_t sequence_length;
-        if (cp < 80)
+        if (cp < 0x80)
             sequence_length = 1;
         else if ((cp >> 5) == 0x6)
             sequence_length = 2;
