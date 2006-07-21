@@ -7,7 +7,16 @@
 </head>
 <body>
 <p><a href="https://sourceforge.net/projects/utfcpp">The Sourceforge project page</a></p>
-<h2>Introduction</h2>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#examples">Examples of Use</a></li>
+<li><a href="#reference">Reference</a></li>
+<li><a href="#points">Points of Interest</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="introduction">Introduction</h2>
 <p>Many C++ developers miss an easy and portable way of handling
 Unicode encoded strings. C++ Standard is currently Unicode
 agnostic, and while some work is being done to introduce Unicode to
@@ -31,7 +40,7 @@ source of information for Unicode. Also, it is not my aim to
 advocate the use of UTF-8 encoded strings in C++ programs; if you
 want to handle UTF-8 encoded strings from C++, I am sure you have
 good reasons for it.</p>
-<h2>Examples of use</h2>
+<h2 id="examples">Examples of use</h2>
 <p>To illustrate the use of this utf8 library, we shall open a file
 containing a line of UTF-8 encoded text, read the line into
 <code>std::string</code>, convert the text to UTF-16, and write it
@@ -98,7 +107,7 @@ the text to UTF-16 encoding. Note that the use of
 <code>is_valid</code> was optional in this case;
 <code>utf8to16</code> throws an exception in case of invalid UTF-8
 text.</p>
-<h2>Reference</h2>
+<h2 id ="reference">Reference</h2>
 <h3>Functions From utf8 Namespace</h3>
 <h4>utf8::append</h4>
 <p>Encodes a 32 bit code point as a UTF-8 sequence of octets and
@@ -635,7 +644,7 @@ assert (utf32result.size() == 2);
 <p>This is a quicker but less safe version of
 <code>utf8::utf8to32</code>. It does not check for validity of the
 supplied UTF-8 sequence.</p>
-<h2>Points of interest</h2>
+<h2 id="points">Points of interest</h2>
 <h4>Design goals and decisions</h4>
 <p>The library was designed to be:</p>
 <ol>
@@ -676,12 +685,12 @@ subset of what my library offers, but if that is all you need it
 may be good enough, especially given the fact that these functions
 are mature and tested in production.</li>
 </ol>
-<h2>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>Until Unicode becomes officially recognized by the C++ Standard
 Library, we need to use other means to work with UTF-8 strings.
 Template functions I describe in this article may be a good step in
 this direction.</p>
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ol>
 <li><a href="http://www.unicode.org/">The Unicode
 Consortium</a>.</li>
