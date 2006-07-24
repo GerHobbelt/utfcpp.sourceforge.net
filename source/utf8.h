@@ -172,7 +172,7 @@ namespace internal
             break;
         }
         // Is the code point valid?
-        if (cp > CODE_POINT_MAX || is_surrogate(cp) || mask8(cp) == 0xff || mask8(cp) == 0xfe)
+        if (cp > CODE_POINT_MAX || is_surrogate(cp) || cp == 0xff || cp == 0xfe)
             return INVALID_CODE_POINT;
             
         if (code_point)
