@@ -138,8 +138,10 @@ namespace internal
                 if (is_trail(*(++it))) { 
                     cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
                 }
-                else
+                else {
+                    --it;
                     return INCOMPLETE_SEQUENCE;
+                }
             break;
             case 3:
                 if (is_trail(*(++it))) {
@@ -147,11 +149,15 @@ namespace internal
                     if (is_trail(*(++it))) {
                         cp += (*it) & 0x3f;
                     }
-                    else
+                    else {
+                        --it; --it; 
                         return INCOMPLETE_SEQUENCE;
+                    }
                 }
-                else
+                else {
+                    --it;
                     return INCOMPLETE_SEQUENCE;
+                }
             break;
             case 4:
                 if (is_trail(*(++it))) {
@@ -161,35 +167,52 @@ namespace internal
                         if (is_trail(*(++it))) {
                             cp += (*it) & 0x3f; 
                         }
-                        else
+                        else {
+                            --it; --it; --it;
                             return INCOMPLETE_SEQUENCE;
+                        }
                     }
-                    else
+                    else {
+                        --it; --it;
                         return INCOMPLETE_SEQUENCE;
+                    }
                 }
-                else
+                else {
+                    --it;
                     return INCOMPLETE_SEQUENCE;
+                }
             break;
         }
         // Is the code point valid?
-        if (cp > CODE_POINT_MAX || is_surrogate(cp) || cp == 0xfffe || cp == 0xffff)
+        if (cp > CODE_POINT_MAX || is_surrogate(cp) || cp == 0xfffe || cp == 0xffff) {
+            for (size_t i = 0; i < sequence_length - 1; ++i) 
+                --it;
             return INVALID_CODE_POINT;
+        }
             
         if (code_point)
             *code_point = cp;
             
-        // Overlong sequence?
         if (cp < 0x80) {
-            if (sequence_length != 1)
+            if (sequence_length != 1) {
+                for (size_t i = 0; i < sequence_length - 1; ++i)
+                    --it;
                 return OVERLONG_SEQUENCE;
+            }
         }
         else if (cp < 0x800) {
-            if (sequence_length != 2)
+            if (sequence_length != 2) {
+                for (size_t i = 0; i < sequence_length - 1; ++i)
+                    --it;
                 return OVERLONG_SEQUENCE;
+            }
         }
         else if (cp < 0x10000) {
-            if (sequence_length != 3)
+            if (sequence_length != 3) {
+                for (size_t i = 0; i < sequence_length - 1; ++i)
+                    --it;
                 return OVERLONG_SEQUENCE;
+            }
         }
            
         ++it;
