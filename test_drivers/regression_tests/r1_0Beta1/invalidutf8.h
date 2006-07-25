@@ -71,3 +71,26 @@ check (!is_valid(u2f_3bytes, u2f_3bytes + 3));
 unsigned char u2f_4bytes[] = {0xf0, 0x80, 0x80, 0xaf};
 check (!is_valid(u2f_4bytes, u2f_4bytes + 4));
 }
+
+// [ 1528369 ] utf8::find_invalid does not return the start of a seqence
+void id_1528369 ()
+{
+// incomplete utf sequences  
+unsigned char utf_incomplete[] = {0xe6, 0x97, 0x0};
+unsigned char* invalid = find_invalid(utf_incomplete, utf_incomplete + 3);
+check (invalid == utf_incomplete);
+
+unsigned char utf_incomplete_two_seqs[] = {0xE6, 0x97, 0xA5, 0xd1, 0x0};
+invalid = find_invalid(utf_incomplete_two_seqs, utf_incomplete_two_seqs + 5);
+check (invalid == utf_incomplete_two_seqs + 3);
+
+// invalid code point
+unsigned char udbff[] = {0xed, 0xaf, 0xbf};
+invalid = find_invalid(udbff, udbff + 3);
+check (invalid == udbff);
+
+// overlong sequence
+unsigned char u2f_3bytes[] = {0xe0, 0x80, 0xaf};
+invalid = find_invalid(u2f_3bytes, u2f_3bytes + 3);
+check (invalid == u2f_3bytes);
+}
