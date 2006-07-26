@@ -110,6 +110,12 @@ namespace internal
         return (cp >= LEAD_SURROGATE_MIN && cp <= TRAIL_SURROGATE_MAX);
     }
 
+    template <typename u32>
+    inline bool is_code_point_valid(u32 cp)
+    {
+      return (cp <= CODE_POINT_MAX && !is_surrogate(cp) && cp != 0xfffe && cp != 0xffff);
+    }  
+
     enum utf_error {OK, NOT_ENOUGH_ROOM, INVALID_LEAD, INCOMPLETE_SEQUENCE, OVERLONG_SEQUENCE, INVALID_CODE_POINT};
 
     template <typename octet_iterator>
@@ -185,7 +191,7 @@ namespace internal
             break;
         }
         // Is the code point valid?
-        if (cp > CODE_POINT_MAX || is_surrogate(cp) || cp == 0xfffe || cp == 0xffff) {
+        if (!is_code_point_valid(cp)) {
             for (octet_difference_type i = 0; i < sequence_length - 1; ++i) 
                 --it;
             return INVALID_CODE_POINT;
@@ -260,7 +266,7 @@ namespace internal
         if (cp < 0x80)                        // one octet
             *(result++) = static_cast<uint8_t>(cp);  
         else if (cp < 0x800) {                // two octets
-            if (internal::is_surrogate(cp)) 
+            if (!internal::is_code_point_valid(cp)) 
                 throw invalid_code_point(cp);
 
             *(result++) = static_cast<uint8_t>((cp >> 6)   | 0xc0);
