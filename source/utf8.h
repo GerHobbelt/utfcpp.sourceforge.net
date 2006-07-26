@@ -117,7 +117,8 @@ namespace internal
     {
         uint32_t cp = mask8(*it);
         // Check the lead octet
-        size_t sequence_length;
+        typedef typename std::iterator_traits<octet_iterator>::difference_type octet_difference_type;
+        octet_difference_type sequence_length;
         if (cp < 0x80)
             sequence_length = 1;
         else if ((cp >> 5) == 0x6)
@@ -129,7 +130,7 @@ namespace internal
         else 
             return INVALID_LEAD;
         // Do we have enough memory?     
-        if (size_t(end - it) < sequence_length)
+        if (end - it < sequence_length)
             return NOT_ENOUGH_ROOM;
         
         // Check trail octets and calculate the code point
@@ -185,7 +186,7 @@ namespace internal
         }
         // Is the code point valid?
         if (cp > CODE_POINT_MAX || is_surrogate(cp) || cp == 0xfffe || cp == 0xffff) {
-            for (size_t i = 0; i < sequence_length - 1; ++i) 
+            for (octet_difference_type i = 0; i < sequence_length - 1; ++i) 
                 --it;
             return INVALID_CODE_POINT;
         }
@@ -195,21 +196,21 @@ namespace internal
             
         if (cp < 0x80) {
             if (sequence_length != 1) {
-                for (size_t i = 0; i < sequence_length - 1; ++i)
+                for (octet_difference_type i = 0; i < sequence_length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x800) {
             if (sequence_length != 2) {
-                for (size_t i = 0; i < sequence_length - 1; ++i)
+                for (octet_difference_type i = 0; i < sequence_length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x10000) {
             if (sequence_length != 3) {
-                for (size_t i = 0; i < sequence_length - 1; ++i)
+                for (octet_difference_type i = 0; i < sequence_length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
