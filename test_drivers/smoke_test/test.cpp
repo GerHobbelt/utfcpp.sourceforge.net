@@ -27,7 +27,21 @@ int main()
     assert (cp == 0x65e5);
     assert (w == twochars + 3);
 
+    unsigned char threechars[] = {0xf0, 0x90, 0x8d, 0x86, 0xe6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
+    w = threechars;
+    cp = next(w, threechars + 9);
+    assert (cp == 0x10346);
+    assert (w == threechars + 4);
+    cp = next(w, threechars + 9);
+    assert (cp == 0x65e5);
+    assert (w == threechars + 7);
+    cp = next(w, threechars + 9);
+    assert (cp == 0x0448);
+    assert (w == threechars + 9);
+
+
     //previous
+    w = twochars + 3;
     cp = previous (w, twochars - 1);
     assert (cp == 0x65e5);
     assert (w == twochars);
@@ -104,6 +118,20 @@ int main()
     assert (cp == 0x65e5);
     assert (w == twochars + 3);
 
+    w = threechars;
+    cp = unchecked::next(w);
+    assert (cp == 0x10346);
+    assert (w == threechars + 4);
+    cp = unchecked::next(w);
+    assert (cp == 0x65e5);
+    assert (w == threechars + 7);
+    cp = unchecked::next(w);
+    assert (cp == 0x0448);
+    assert (w == threechars + 9);
+
+
+    //previous
+    w = twochars + 3;
     //previous
     cp = unchecked::previous (w);
     assert (cp == 0x65e5);
