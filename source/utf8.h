@@ -161,7 +161,7 @@ namespace internal
             break;
             case 4:
                 if (is_trail(*(++it))) {
-                    cp = ((cp << 18) & 0x1fffff) + (mask8(*it) << 12) & 0x3ffff;                
+                    cp = ((cp << 18) & 0x1fffff) + ((mask8(*it) << 12) & 0x3ffff);                
                     if (is_trail(*(++it))) {
                         cp += (mask8(*it) << 6) & 0xfff;
                         if (is_trail(*(++it))) {
