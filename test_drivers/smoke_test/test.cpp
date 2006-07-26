@@ -8,6 +8,12 @@ using namespace std;
 
 int main()
 {
+    unsigned char u10ffff[] = {0xf4, 0x8f, 0xbf, 0xbf};
+    unsigned char* uit = u10ffff;
+    unsigned int cp_u10ffff = next (uit, u10ffff + 4);
+    assert (cp_u10ffff == 0x10ffff);
+    return 0;
+    
     //append
     unsigned char u[5] = {0,0,0,0,0};
 
@@ -45,6 +51,17 @@ int main()
     cp = previous (w, twochars - 1);
     assert (cp == 0x65e5);
     assert (w == twochars);
+
+    w = threechars + 9;
+    cp = previous(w, threechars - 1);
+    assert (cp == 0x0448);
+    assert (w == threechars + 7);
+    cp = previous(w, threechars -1);
+    assert (cp == 0x65e5);
+    assert (w == threechars + 4);
+    cp = previous(w, threechars - 1);
+    assert (cp == 0x10346);
+    assert (w == threechars); 
 
     // advance
     w = twochars;
@@ -132,10 +149,20 @@ int main()
 
     //previous
     w = twochars + 3;
-    //previous
     cp = unchecked::previous (w);
     assert (cp == 0x65e5);
     assert (w == twochars);
+
+    w = threechars + 9;
+    cp = unchecked::previous(w);
+    assert (cp == 0x0448);
+    assert (w == threechars + 7);
+    cp = unchecked::previous(w);
+    assert (cp == 0x65e5);
+    assert (w == threechars + 4);
+    cp = unchecked::previous(w);
+    assert (cp == 0x10346);
+    assert (w == threechars); 
 
     // advance
     w = twochars;
