@@ -10,7 +10,7 @@ void id_1528544()
         unsigned int cp_u10ffff = next (uit, u10ffff + 4);
         check (cp_u10ffff == 0x10ffff);  
     }
-    catch (std::exception& ex) {
+    catch (std::exception&) {
         check (false);
     }
 }

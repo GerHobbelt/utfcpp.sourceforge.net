@@ -22,7 +22,7 @@ int main()
     char byte;
     while (!fs8.eof()) {
         string line;
-        while ((byte = fs8.get()) != '\n' && !fs8.eof()) 
+        while ((byte = static_cast<char>(fs8.get())) != '\n' && !fs8.eof()) 
 	    line.push_back(byte);
 
         line_count++;

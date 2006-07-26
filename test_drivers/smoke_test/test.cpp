@@ -8,12 +8,6 @@ using namespace std;
 
 int main()
 {
-    unsigned char u10ffff[] = {0xf4, 0x8f, 0xbf, 0xbf};
-    unsigned char* uit = u10ffff;
-    unsigned int cp_u10ffff = next (uit, u10ffff + 4);
-    assert (cp_u10ffff == 0x10ffff);
-    return 0;
-    
     //append
     unsigned char u[5] = {0,0,0,0,0};
 
