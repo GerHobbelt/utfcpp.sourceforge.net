@@ -1,13 +1,13 @@
 utf8 cpp library
+Release 1.0 Beta 2
 
-Release 1.0 Beta 1
+In this release, several bugs were fixed, and internal implementation changed to avoid duplication of code and hide implementation details. 
 
-Initial release.
+Bug Fixes: 
+[ 1524459 ] utf8::is_valid does not report some illegal code positions 
+[ 1525236 ] utf8::is_valid does not detect overlong sequences 
+[ 1528544 ] utf::next does not work correctly for 4-byte sequences 
+[ 1528369 ] utf8::find_invalid does not return the start of a seqence 
 
-List of changes:
-N/A
+Files: utf8.h utf8cpp.html ReleaseNotes
 
-Files:
-utf8.h
-utf8cpp.html
-ReleaseNotes
