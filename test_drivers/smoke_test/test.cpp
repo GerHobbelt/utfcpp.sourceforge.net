@@ -17,6 +17,9 @@ int main()
     end = append(0x65e5, u);
     assert (u[0] == 0xe6 && u[1] == 0x97 && u[2] == 0xa5 && u[3] == 0 && u[4] == 0);
 
+    end = append(0x3044, u);
+    assert (u[0] == 0xe3 && u[1] == 0x81 && u[2] == 0x84 && u[3] == 0 && u[4] == 0);
+
     end = append(0x10346, u);
     assert (u[0] == 0xf0 && u[1] == 0x90 && u[2] == 0x8d && u[3] == 0x86 && u[4] == 0);
 
