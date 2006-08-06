@@ -21,15 +21,6 @@ int main(int argc, char** argv)
     return 0;
     }
 
-    // Create a file to write utf-16 text
-    string utf16_file_name = TEST_FILE_PATH;
-    utf16_file_name += "utf16.txt";
-    ofstream fs16(utf16_file_name.c_str(), ios_base::out | ios_base::binary);
-    if (!fs16.is_open()) {
-        cout << "Could not open utf16.txt" << endl;
-        return 0;
-    }  
-
     // Read it line by line
     unsigned int line_count = 0;
     char byte;
@@ -49,9 +40,6 @@ int main(int argc, char** argv)
         // Convert it to utf-16 and write to the file
         vector<unsigned short> utf16_line;
         utf8to16(line_start, line_end, back_inserter(utf16_line));
-        utf16_line.push_back('\n');
-        fs16.write(reinterpret_cast<const char*>(&utf16_line[0]), utf16_line.size() * sizeof (unsigned short));
-        utf16_line.pop_back(); // get rid of '\n'
 
         // Back to utf-8 and compare it to the original line.
         string back_to_utf8;
