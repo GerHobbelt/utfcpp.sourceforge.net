@@ -428,7 +428,7 @@ namespace internal
                 ++it;
                 cp += (*it) & 0x3f;
             }
-            else if (((*it) >> 3) == 0x1e) {
+            else if ((internal::mask8(*it) >> 3) == 0x1e) {
                 ++it;
                 cp = ((cp << 18) & 0x1fffff) + ((internal::mask8(*it) << 12) & 0x3ffff);                
                 ++it;

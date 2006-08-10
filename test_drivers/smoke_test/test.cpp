@@ -24,13 +24,13 @@ int main()
     assert (u[0] == 0xf0 && u[1] == 0x90 && u[2] == 0x8d && u[3] == 0x86 && u[4] == 0);
 
     //next
-    unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
-    unsigned char* w = twochars;
+    char* twochars = "\xe6\x97\xa5\xd1\x88";
+    char* w = twochars;
     int cp = next(w, twochars + 6);
     assert (cp == 0x65e5);
     assert (w == twochars + 3);
 
-    unsigned char threechars[] = {0xf0, 0x90, 0x8d, 0x86, 0xe6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
+    char* threechars = "\xf0\x90\x8d\x86\xe6\x97\xa5\xd1\x88";
     w = threechars;
     cp = next(w, threechars + 9);
     assert (cp == 0x10346);
