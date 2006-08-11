@@ -33,6 +33,7 @@ int main(int argc, char** argv)
     // fill the data
     fs8.read(buf, length);
 
+    cout << "UTF8 to UTF-16\n";
     {
         memset (utf16buf, 0 , length * sizeof(unsigned short));
         // utf-8 cpp:
@@ -76,8 +77,43 @@ int main(int argc, char** argv)
     if (!equal(utf16buf, utf16buf + length, utf16iconvbuf)) 
         cout << "Different result!!!";
     
+    // the other way around
+    cout << "UTF16 to UTF-8\n";
+    {
+        //iconv
+        memset(buf, 0, length);    
+        cout<< "iconv: ";
 
+        iconv_t cd = iconv_open("UTF-8", "UTF-16LE");
+        if (cd == iconv_t(-1)) {
+            cout << "Error openning the iconv stream";
+            return 0;
+        } 
+        char* inbuf = (char*)utf16buf;
+        size_t in_bytes_left = length * sizeof(unsigned char);
+        char* outbuf =buf;
+        size_t out_bytes_left = length;
+        {
+            timer t(cout);
+            iconv(cd, &inbuf, &in_bytes_left, &outbuf, &out_bytes_left);
+        }
+        iconv_close(cd);
+    }
+
+    {
+        memset (buf, 0 , length);
+        // utf-8 cpp:
+        cout << "unchecked::utf16to8: ";
+        timer t(cout);
+        utf8::unchecked::utf16to8(utf16buf, utf16buf + length, buf);
+    }
     
+    {
+        memset (buf, 0 , length);
+        cout << "utf16to8: ";
+        timer t(cout);
+        utf8::utf16to8(utf16buf, utf16buf + length, buf);
+    }
     delete [] buf;
     delete [] utf16buf;
 }
