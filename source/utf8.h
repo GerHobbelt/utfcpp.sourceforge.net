@@ -356,7 +356,7 @@ namespace internal
                     throw invalid_utf16(static_cast<uint16_t>(*start));
             
             }
-            *result = append(cp, result);
+            result = append(cp, result);
         }         
     }
 
@@ -378,7 +378,7 @@ namespace internal
     void utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result)
     {
         while (start != end)
-            *result = append(*(start++), result);
+            result = append(*(start++), result);
     }
 
     template <typename octet_iterator, typename u32bit_iterator>
@@ -481,7 +481,7 @@ namespace internal
                     uint32_t trail_surrogate = internal::mask16(*start++);
                     cp = (cp << 10) + trail_surrogate + internal::SURROGATE_OFFSET;
                 }
-                *result = append(cp, result);
+                result = append(cp, result);
             }         
         }
 
@@ -503,7 +503,7 @@ namespace internal
         void utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result)
         {
             while (start != end)
-                *result = append(*(start++), result);
+                result = append(*(start++), result);
         }
 
         template <typename octet_iterator, typename u32bit_iterator>
