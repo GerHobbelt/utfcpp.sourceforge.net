@@ -339,7 +339,7 @@ namespace internal
     }
 
     template <typename u16bit_iterator, typename octet_iterator>
-    void utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator result)
+    octet_iterator utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator result)
     {       
         while (start != end) {
             uint32_t cp = internal::mask16(*start++);
@@ -357,11 +357,12 @@ namespace internal
             
             }
             result = append(cp, result);
-        }         
+        }
+        return result;        
     }
 
     template <typename u16bit_iterator, typename octet_iterator>
-    void utf8to16 (octet_iterator start, octet_iterator end, u16bit_iterator result)
+    u16bit_iterator utf8to16 (octet_iterator start, octet_iterator end, u16bit_iterator result)
     {
         while (start != end) {
             uint32_t cp = next(start, end);
@@ -372,20 +373,25 @@ namespace internal
             else
                 *result++ = static_cast<uint16_t>(cp);
         }
+        return result;
     }
 
     template <typename octet_iterator, typename u32bit_iterator>
-    void utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result)
+    octet_iterator utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result)
     {
         while (start != end)
             result = append(*(start++), result);
+
+        return result;
     }
 
     template <typename octet_iterator, typename u32bit_iterator>
-    void utf8to32 (octet_iterator start, octet_iterator end, u32bit_iterator result)
+    u32bit_iterator utf8to32 (octet_iterator start, octet_iterator end, u32bit_iterator result)
     {
         while (start < end)
             (*result++) = next(start, end);
+
+        return result;
     }
 
     namespace unchecked 
@@ -472,7 +478,7 @@ namespace internal
         }
 
         template <typename u16bit_iterator, typename octet_iterator>
-        void utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator result)
+        octet_iterator utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator result)
         {       
             while (start != end) {
                 uint32_t cp = internal::mask16(*start++);
@@ -482,11 +488,12 @@ namespace internal
                     cp = (cp << 10) + trail_surrogate + internal::SURROGATE_OFFSET;
                 }
                 result = append(cp, result);
-            }         
+            }
+            return result;         
         }
 
         template <typename u16bit_iterator, typename octet_iterator>
-        void utf8to16 (octet_iterator start, octet_iterator end, u16bit_iterator result)
+        u16bit_iterator utf8to16 (octet_iterator start, octet_iterator end, u16bit_iterator result)
         {
             while (start != end) {
                 uint32_t cp = next(start);
@@ -497,20 +504,25 @@ namespace internal
                 else
                     *result++ = static_cast<uint16_t>(cp);
             }
+            return result;
         }
 
         template <typename octet_iterator, typename u32bit_iterator>
-        void utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result)
+        octet_iterator utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result)
         {
             while (start != end)
                 result = append(*(start++), result);
+
+            return result;
         }
 
         template <typename octet_iterator, typename u32bit_iterator>
-        void utf8to32 (octet_iterator start, octet_iterator end, u32bit_iterator result)
+        u32bit_iterator utf8to32 (octet_iterator start, octet_iterator end, u32bit_iterator result)
         {
             while (start < end)
                 (*result++) = next(start);
+
+            return result;
         }
 
     } // namespace utf8::unchecked

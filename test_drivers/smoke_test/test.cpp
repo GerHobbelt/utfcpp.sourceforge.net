@@ -71,29 +71,40 @@ int main()
 
     // utf32to8
     int utf32string[] = {0x448, 0x65E5, 0x10346, 0};
-    vector<unsigned char> utf8result;
+    vector<char> utf8result;
     utf32to8(utf32string, utf32string + 3, back_inserter(utf8result));
     assert (utf8result.size() == 9);
+    // try it with the return value;
+    char* utf8_end = utf32to8(utf32string, utf32string + 3, &utf8result[0]);
+    assert (utf8_end == &utf8result[0] + 9);
 
     //utf8to32
     vector<int> utf32result;
     utf8to32(twochars, twochars + 5, back_inserter(utf32result));
     assert (utf32result.size() == 2);
+    // try it with the return value;
+    int* utf32_end = utf8to32(twochars, twochars + 5, &utf32result[0]);
+    assert (utf32_end == &utf32result[0] + 2);
 
     //utf16to8
     unsigned short utf16string[] = {0x41, 0x0448, 0x65e5, 0xd834, 0xdd1e};
     utf8result.clear();
     utf16to8(utf16string, utf16string + 5, back_inserter(utf8result));
     assert (utf8result.size() == 10);
+    // try it with the return value;
+    utf8_end = utf16to8 (utf16string, utf16string + 5, &utf8result[0]);
+    assert (utf8_end == &utf8result[0] + 10);
 
     //utf8to16
-    unsigned char utf8_with_surrogates[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88,
-        0xf0, 0x9d, 0x84, 0x9e};
+    char utf8_with_surrogates[] = "\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e";
     vector <unsigned short> utf16result;
     utf8to16(utf8_with_surrogates, utf8_with_surrogates + 9, back_inserter(utf16result));
     assert (utf16result.size() == 4);
     assert (utf16result[2] == 0xd834);
     assert (utf16result[3] == 0xdd1e);
+    // try it with the return value;
+    unsigned short* utf16_end = utf8to16 (utf8_with_surrogates, utf8_with_surrogates + 9, &utf16result[0]);
+    assert (utf16_end == &utf16result[0] + 4);
 
     //find_invalid
     unsigned char utf_invalid[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0xfa};
@@ -174,16 +185,25 @@ int main()
     utf8result.clear();
     unchecked::utf32to8(utf32string, utf32string + 3, back_inserter(utf8result));
     assert (utf8result.size() == 9);
+    // try it with the return value;
+    utf8_end = utf32to8(utf32string, utf32string + 3, &utf8result[0]);
+    assert(utf8_end == &utf8result[0] + 9);
 
     //utf8to32
     utf32result.clear();
     unchecked::utf8to32(twochars, twochars + 5, back_inserter(utf32result));
     assert (utf32result.size() == 2);
+    // try it with the return value;
+    utf32_end = utf8to32(twochars, twochars + 5, &utf32result[0]);
+    assert (utf32_end == &utf32result[0] + 2);
 
     //utf16to8
     utf8result.clear();
     unchecked::utf16to8(utf16string, utf16string + 5, back_inserter(utf8result));
     assert (utf8result.size() == 10);
+    // try it with the return value;
+    utf8_end = utf16to8 (utf16string, utf16string + 5, &utf8result[0]);
+    assert (utf8_end == &utf8result[0] + 10);
 
     //utf8to16
     utf16result.clear();
@@ -191,6 +211,9 @@ int main()
     assert (utf16result.size() == 4);
     assert (utf16result[2] == 0xd834);
     assert (utf16result[3] == 0xdd1e);
+    // try it with the return value;
+    utf16_end = utf8to16 (utf8_with_surrogates, utf8_with_surrogates + 9, &utf16result[0]);
+    assert (utf16_end == &utf16result[0] + 4);
 }
 
 
