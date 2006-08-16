@@ -268,14 +268,15 @@ thrown.</p>
 <h4>utf8::utf16to8</h4>
 <p>Converts a UTF-16 encoded string to UTF-8.</p>
 <code>template &lt;typename u16bit_iterator, typename
-octet_iterator&gt; void utf16to8 (u16bit_iterator start,
+octet_iterator&gt; octet_iterator utf16to8 (u16bit_iterator start,
 u16bit_iterator end, octet_iterator result);</code>
 <p><code>start</code>: an iterator pointing to the beginning of the
 UTF-16 encoded string to convert.<br>
 <code>end</code>: an iterator pointing to pass-the-end of the
 UTF-16 encoded string to convert.<br>
 <code>result</code>: an output iterator to the place in the UTF-8
-string where to append the result of conversion.</p>
+string where to append the result of conversion.<br>
+<u>Return value</u>: An iterator pointing to the place after the appended UTF-8 string.</p>
 <p>Example of use:</p>
 <pre>
 unsigned short utf16string[] = {0x41, 0x0448, 0x65e5, 0xd834, 0xdd1e};
@@ -290,14 +291,15 @@ assert (utf8result.size() == 10);
 <h4>utf8::utf8to16</h4>
 <p>Converts an UTF-8 encoded string to UTF-16</p>
 <code>template &lt;typename u16bit_iterator, typename
-octet_iterator&gt; void utf8to16 (octet_iterator start,
+octet_iterator&gt; u16bit_iterator utf8to16 (octet_iterator start,
 octet_iterator end, u16bit_iterator result);</code>
 <p><code>start</code>: an iterator pointing to the beginning of the
 UTF-8 encoded string to convert. &lt; br /&gt; <code>end</code>: an
 iterator pointing to pass-the-end of the UTF-8 encoded string to
 convert.<br>
 <code>result</code>: an output iterator to the place in the UTF-16
-string where to append the result of conversion.</p>
+string where to append the result of conversion.<br>
+<u>Return value</u>: An iterator pointing to the place after the appended UTF-16 string.</p>
 <p>Example of use:</p>
 <pre>
 unsigned char utf8_with_surrogates[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88,
@@ -318,14 +320,15 @@ thrown.</p>
 <h4>utf8::utf32to8</h4>
 <p>Converts a UTF-32 encoded string to UTF-8.</p>
 <code>template &lt;typename octet_iterator, typename
-u32bit_iterator&gt; void utf32to8 (u32bit_iterator start,
+u32bit_iterator&gt; octet_iterator utf32to8 (u32bit_iterator start,
 u32bit_iterator end, octet_iterator result);</code>
 <p><code>start</code>: an iterator pointing to the beginning of the
 UTF-32 encoded string to convert.<br>
 <code>end</code>: an iterator pointing to pass-the-end of the
 UTF-32 encoded string to convert.<br>
 <code>result</code>: an output iterator to the place in the UTF-8
-string where to append the result of conversion.</p>
+string where to append the result of conversion.<br>
+<u>Return value</u>: An iterator pointing to the place after the appended UTF-8 string.</p>
 <p>Example of use:</p>
 <pre>
 int utf32string[] = {0x448, 0x65E5, 0x10346, 0};
@@ -340,14 +343,15 @@ assert (utf8result.size() == 9);
 <h4>utf8::utf8to32</h4>
 <p>Converts a UTF-8 encoded string to UTF-32.</p>
 <code>template &lt;typename octet_iterator, typename
-u32bit_iterator&gt; void utf8to32 (octet_iterator start,
+u32bit_iterator&gt; u32bit_iterator utf8to32 (octet_iterator start,
 octet_iterator end, u32bit_iterator result);</code>
 <p><code>start</code>: an iterator pointing to the beginning of the
 UTF-8 encoded string to convert.<br>
 <code>end</code>: an iterator pointing to pass-the-end of the UTF-8
 encoded string to convert.<br>
 <code>result</code>: an output iterator to the place in the UTF-32
-string where to append the result of conversion.</p>
+string where to append the result of conversion.<br>
+<u>Return value</u>: An iterator pointing to the place after the appended UTF-32 string.</p>
 <p>Example of use:</p>
 <pre>
 unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
@@ -552,14 +556,15 @@ supplied UTF-8 sequence.</p>
 <h4>utf8::unchecked::utf16to8</h4>
 <p>Converts a UTF-16 encoded string to UTF-8.</p>
 <code>template &lt;typename u16bit_iterator, typename
-octet_iterator&gt; void utf16to8 (u16bit_iterator start,
+octet_iterator&gt; octet_iterator utf16to8 (u16bit_iterator start,
 u16bit_iterator end, octet_iterator result);</code>
 <p><code>start</code>: an iterator pointing to the beginning of the
 UTF-16 encoded string to convert.<br>
 <code>end</code>: an iterator pointing to pass-the-end of the
 UTF-16 encoded string to convert.<br>
 <code>result</code>: an output iterator to the place in the UTF-8
-string where to append the result of conversion.</p>
+string where to append the result of conversion.
+<u>Return value</u>: An iterator pointing to the place after the appended UTF-8 string.</p>
 <p>Example of use:</p>
 <pre>
 unsigned short utf16string[] = {0x41, 0x0448, 0x65e5, 0xd834, 0xdd1e};
@@ -575,14 +580,17 @@ supplied UTF-16 sequence.</p>
 <h4>utf8::unchecked::utf8to16</h4>
 <p>Converts an UTF-8 encoded string to UTF-16</p>
 <code>template &lt;typename u16bit_iterator, typename
-octet_iterator&gt; void utf8to16 (octet_iterator start,
+octet_iterator&gt; u16bit_iterator utf8to16 (octet_iterator start,
 octet_iterator end, u16bit_iterator result);</code>
 <p><code>start</code>: an iterator pointing to the beginning of the
 UTF-8 encoded string to convert. &lt; br /&gt; <code>end</code>: an
 iterator pointing to pass-the-end of the UTF-8 encoded string to
 convert.<br>
 <code>result</code>: an output iterator to the place in the UTF-16
-string where to append the result of conversion.</p>
+string where to append the result of conversion.<br>
+<u>Return value</u>: An iterator pointing to the place after the appended UTF-16 string.
+</p>
+
 <p>Example of use:</p>
 <pre>
 unsigned char utf8_with_surrogates[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88,
@@ -601,14 +609,16 @@ supplied UTF-8 sequence.</p>
 <h4>utf8::unchecked::utf32to8</h4>
 <p>Converts a UTF-32 encoded string to UTF-8.</p>
 <code>template &lt;typename octet_iterator, typename
-u32bit_iterator&gt; void utf32to8 (u32bit_iterator start,
+u32bit_iterator&gt; octet_iterator utf32to8 (u32bit_iterator start,
 u32bit_iterator end, octet_iterator result);</code>
 <p><code>start</code>: an iterator pointing to the beginning of the
 UTF-32 encoded string to convert.<br>
 <code>end</code>: an iterator pointing to pass-the-end of the
 UTF-32 encoded string to convert.<br>
 <code>result</code>: an output iterator to the place in the UTF-8
-string where to append the result of conversion.</p>
+string where to append the result of conversion.<br>
+<u>Return value</u>: An iterator pointing to the place after the appended UTF-8 string.
+</p>
 <p>Example of use:</p>
 <pre>
 int utf32string[] = {0x448, 0x65E5, 0x10346, 0};
@@ -624,14 +634,16 @@ supplied UTF-32 sequence.</p>
 <h4>utf8::unchecked::utf8to32</h4>
 <p>Converts a UTF-8 encoded string to UTF-32.</p>
 <code>template &lt;typename octet_iterator, typename
-u32bit_iterator&gt; void utf8to32 (octet_iterator start,
+u32bit_iterator&gt; u32bit_iterator utf8to32 (octet_iterator start,
 octet_iterator end, u32bit_iterator result);</code>
 <p><code>start</code>: an iterator pointing to the beginning of the
 UTF-8 encoded string to convert.<br>
 <code>end</code>: an iterator pointing to pass-the-end of the UTF-8
 encoded string to convert.<br>
 <code>result</code>: an output iterator to the place in the UTF-32
-string where to append the result of conversion.</p>
+string where to append the result of conversion.<br>
+<u>Return value</u>: An iterator pointing to the place after the appended UTF-32 string.
+</p>
 <p>Example of use:</p>
 <pre>
 unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
