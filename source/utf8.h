@@ -344,7 +344,7 @@ namespace internal
         while (start != end) {
             uint32_t cp = internal::mask16(*start++);
             // Take care of surrogate pairs first
-            if (cp >= internal::LEAD_SURROGATE_MIN && cp <= internal::LEAD_SURROGATE_MAX) {
+            if (internal::is_surrogate(cp)) {
                 if (start != end) {
                     uint32_t trail_surrogate = internal::mask16(*start++);
                     if (trail_surrogate >= internal::TRAIL_SURROGATE_MIN && trail_surrogate <= internal::TRAIL_SURROGATE_MAX)
@@ -483,7 +483,7 @@ namespace internal
             while (start != end) {
                 uint32_t cp = internal::mask16(*start++);
             // Take care of surrogate pairs first
-                if (cp >= internal::LEAD_SURROGATE_MIN && cp <= internal::LEAD_SURROGATE_MAX) {
+                if (internal::is_surrogate(cp)) {
                     uint32_t trail_surrogate = internal::mask16(*start++);
                     cp = (cp << 10) + trail_surrogate + internal::SURROGATE_OFFSET;
                 }
