@@ -462,12 +462,6 @@ namespace internal
         }
 
         template <typename octet_iterator>
-        uint32_t get(octet_iterator it)
-        {
-            return next(it);
-        }
-
-        template <typename octet_iterator>
         typename std::iterator_traits<octet_iterator>::difference_type
         distance (octet_iterator first, octet_iterator last)
         {
