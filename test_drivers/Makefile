@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -g
 
-all: smoketest regressiontest negativetest utf8reader
+all: smoketest regressiontest negativetest utf8readertest
 
 smoketest:
 	cd smoke_test &&  $(MAKE) $@
@@ -12,5 +12,6 @@ regressiontest:
 negativetest:
 	cd negative &&  $(MAKE) $@
 
-utf8reader:
+utf8readertest:
 	cd utf8reader &&  $(MAKE) $@
+
