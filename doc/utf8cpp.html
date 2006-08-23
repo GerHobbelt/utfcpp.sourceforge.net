@@ -155,8 +155,8 @@ exception is thrown.<br>
 UTF-8 code point.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
-unsigned char* w = twochars;
+char* twochars = "\xe6\x97\xa5\xd1\x88";
+char* w = twochars;
 
 int cp = next(w, twochars + 6);
 
@@ -185,7 +185,7 @@ beginning of the string in the search for a UTF-8 lead octet.<br>
 point.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
+char* twochars = "\xe6\x97\xa5\xd1\x88";
 unsigned char* w = twochars + 3;
 
 int cp = previous (w, twochars - 1);
@@ -222,7 +222,7 @@ extraction of a code point, an <code>utf8::not_enough_room</code>
 exception is thrown.<br></p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
+char* twochars = "\xe6\x97\xa5\xd1\x88";
 unsigned char* w = twochars;
 
 advance (w, 2, twochars + 6);
@@ -248,7 +248,7 @@ length. It can be the beginning of a new code point, or not.<br>
 points.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
+char* twochars = "\xe6\x97\xa5\xd1\x88";
 
 size_t dist = utf8::distance(twochars, twochars + 5);
 
@@ -302,8 +302,7 @@ string where to append the result of conversion.<br>
 <u>Return value</u>: An iterator pointing to the place after the appended UTF-16 string.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char utf8_with_surrogates[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88,
-    0xf0, 0x9d, 0x84, 0x9e};
+char utf8_with_surrogates[] = "\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e";
 vector &lt;unsigned short&gt; utf16result;
 
 utf8to16(utf8_with_surrogates, utf8_with_surrogates + 9, back_inserter(utf16result));
@@ -354,7 +353,7 @@ string where to append the result of conversion.<br>
 <u>Return value</u>: An iterator pointing to the place after the appended UTF-32 string.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
+char* twochars = "\xe6\x97\xa5\xd1\x88";
 vector&lt;int&gt; utf32result;
 
 utf8to32(twochars, twochars + 5, back_inserter(utf32result));
@@ -379,9 +378,9 @@ octet in the UTF-8 string. In case none were found, equals
 <code>end</code>.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char utf_invalid[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0xfa};
+char utf_invalid[] = "\xe6\x97\xa5\xd1\x88\xfa";
 
-unsigned char* invalid = find_invalid(utf_invalid, utf_invalid + 6);
+char* invalid = find_invalid(utf_invalid, utf_invalid + 6);
 
 assert (invalid == utf_invalid + 5);
 </pre>
@@ -401,7 +400,7 @@ string to test for validity.<br>
 UTF-8 string; <code>false</code> if not.</p>
 Example of use:
 <pre>
-unsigned char utf_invalid[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0xfa};
+char utf_invalid[] = "\xe6\x97\xa5\xd1\x88\xfa";
 
 bool bvalid = is_valid(utf_invalid, utf_invalid + 6);
 
@@ -467,8 +466,8 @@ code point.<br>
 UTF-8 code point.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
-unsigned char* w = twochars;
+char* twochars = "\xe6\x97\xa5\xd1\x88";
+char* w = twochars;
 
 int cp = unchecked::next(w);
 
@@ -492,8 +491,8 @@ point to the beginning of the previous code point.<br>
 point.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
-unsigned char* w = twochars + 3;
+char* twochars = "\xe6\x97\xa5\xd1\x88";
+char* w = twochars + 3;
 
 int cp = unchecked::previous (w);
 
@@ -517,8 +516,8 @@ point.<br>
 we want to advance.<br></p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
-unsigned char* w = twochars;
+char* twochars = "\xe6\x97\xa5\xd1\x88";
+char* w = twochars;
 
 unchecked::advance (w, 2);
 
@@ -544,7 +543,7 @@ length. It can be the beginning of a new code point, or not.<br>
 points.</p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
+char* twochars = "\xe6\x97\xa5\xd1\x88";
 
 size_t dist = utf8::unchecked::distance(twochars, twochars + 5);
 
@@ -593,8 +592,7 @@ string where to append the result of conversion.<br>
 
 <p>Example of use:</p>
 <pre>
-unsigned char utf8_with_surrogates[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88,
-    0xf0, 0x9d, 0x84, 0x9e};
+char utf8_with_surrogates[] = "\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e";
 vector &lt;unsigned short&gt; utf16result;
 
 unchecked::utf8to16(utf8_with_surrogates, utf8_with_surrogates + 9, back_inserter(utf16result));
@@ -646,7 +644,7 @@ string where to append the result of conversion.<br>
 </p>
 <p>Example of use:</p>
 <pre>
-unsigned char twochars[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0x0};
+char* twochars = "\xe6\x97\xa5\xd1\x88";
 vector&lt;int&gt; utf32result;
 
 unchecked::utf8to32(twochars, twochars + 5, back_inserter(utf32result));

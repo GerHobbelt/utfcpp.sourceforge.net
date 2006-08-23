@@ -107,8 +107,8 @@ int main()
     assert (utf16_end == &utf16result[0] + 4);
 
     //find_invalid
-    unsigned char utf_invalid[] = {0xE6, 0x97, 0xA5, 0xd1, 0x88, 0xfa};
-    unsigned char* invalid = find_invalid(utf_invalid, utf_invalid + 6);
+    char utf_invalid[] = "\xe6\x97\xa5\xd1\x88\xfa";
+    char* invalid = find_invalid(utf_invalid, utf_invalid + 6);
     assert (invalid == utf_invalid + 5);
 
     //is_valid
