@@ -125,8 +125,12 @@ namespace internal
         // Check the lead octet
         typedef typename std::iterator_traits<octet_iterator>::difference_type octet_difference_type;
         octet_difference_type sequence_length;
-        if (cp < 0x80)
-            sequence_length = 1;
+        if (cp < 0x80) {
+            if (code_point)
+                *code_point = cp;
+            ++it;
+            return OK;
+        }
         else if ((cp >> 5) == 0x6)
             sequence_length = 2;
         else if ((cp >> 4) == 0xe)
