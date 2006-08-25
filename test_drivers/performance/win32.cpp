@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     wchar_t* utf16iconvbuf = new wchar_t[wlength];
     {
         memset (utf16iconvbuf, 0 , wlength * sizeof(wchar_t));
-        // iconv
+        // win32
         cout << "win32: ";
         
         {
@@ -72,7 +72,33 @@ int main(int argc, char** argv)
     if (!equal(utf16buf, utf16buf + wlength, utf16iconvbuf)) 
         cout << "Different result!!!";
     
+    // the other way around
+    cout << "UTF16 to UTF-8\n";
+    {
+        //win32
+        memset(buf, 0, length);    
+        cout<< "win32: ";
 
+        {
+            timer t(cout);
+            WideCharToMultiByte(CP_UTF8, 0, utf16buf, wlength, buf, length, NULL, NULL);
+        }
+    }
+
+    {
+        memset (buf, 0 , length);
+        // utf-8 cpp:
+        cout << "unchecked::utf16to8: ";
+        timer t(cout);
+        utf8::unchecked::utf16to8(utf16buf, utf16buf + wlength, buf);
+    }
+    
+    {
+        memset (buf, 0 , length);
+        cout << "utf16to8: ";
+        timer t(cout);
+        utf8::utf16to8(utf16buf, utf16buf + wlength, buf);
+    }
     
     delete [] buf;
     delete [] utf16buf;
