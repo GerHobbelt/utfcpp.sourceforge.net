@@ -126,10 +126,14 @@ namespace internal
         typedef typename std::iterator_traits<octet_iterator>::difference_type octet_difference_type;
         octet_difference_type sequence_length;
         if (cp < 0x80) {
-            if (code_point)
-                *code_point = cp;
-            ++it;
-            return OK;
+            if (end - it > 0) {
+                if (code_point)
+                    *code_point = cp;
+                ++it;
+                return OK;
+            }
+            else
+                return NOT_ENOUGH_ROOM;
         }
         else if ((cp >> 5) == 0x6)
             sequence_length = 2;
