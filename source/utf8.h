@@ -113,8 +113,22 @@ namespace internal
     template <typename u32>
     inline bool is_code_point_valid(u32 cp)
     {
-      return (cp <= CODE_POINT_MAX && !is_surrogate(cp) && cp != 0xfffe && cp != 0xffff);
+        return (cp <= CODE_POINT_MAX && !is_surrogate(cp) && cp != 0xfffe && cp != 0xffff);
     }  
+
+    inline size_t sequence_length(uint8_t lead)
+    {
+        if (lead < 0x80) 
+            return 1;
+        else if ((lead >> 5) == 0x6)
+            return 2;
+        else if ((lead >> 4) == 0xe)
+            return 3;
+        else if ((lead >> 3) == 0x1e)
+            return 4;
+        else 
+            return 0;
+    }
 
     enum utf_error {OK, NOT_ENOUGH_ROOM, INVALID_LEAD, INCOMPLETE_SEQUENCE, OVERLONG_SEQUENCE, INVALID_CODE_POINT};
 
@@ -123,9 +137,10 @@ namespace internal
     {
         uint32_t cp = mask8(*it);
         // Check the lead octet
-        typedef typename std::iterator_traits<octet_iterator>::difference_type octet_difference_type;
-        octet_difference_type sequence_length;
-        if (cp < 0x80) {
+        size_t length = sequence_length(mask8(*it));
+
+        // "Shortcut" for ASCII characters
+        if (length == 1) {
             if (end - it > 0) {
                 if (code_point)
                     *code_point = cp;
@@ -135,20 +150,16 @@ namespace internal
             else
                 return NOT_ENOUGH_ROOM;
         }
-        else if ((cp >> 5) == 0x6)
-            sequence_length = 2;
-        else if ((cp >> 4) == 0xe)
-            sequence_length = 3;
-        else if ((cp >> 3) == 0x1e)
-            sequence_length = 4;
-        else 
-            return INVALID_LEAD;
+
         // Do we have enough memory?     
-        if (end - it < sequence_length)
+        if (end - it < length)
             return NOT_ENOUGH_ROOM;
         
         // Check trail octets and calculate the code point
-        switch (sequence_length) {
+        switch (length) {
+            case 0:
+                return INVALID_LEAD;
+                break;
             case 2:
                 if (is_trail(*(++it))) { 
                     cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
@@ -200,7 +211,7 @@ namespace internal
         }
         // Is the code point valid?
         if (!is_code_point_valid(cp)) {
-            for (octet_difference_type i = 0; i < sequence_length - 1; ++i) 
+            for (size_t i = 0; i < length - 1; ++i) 
                 --it;
             return INVALID_CODE_POINT;
         }
@@ -209,22 +220,22 @@ namespace internal
             *code_point = cp;
             
         if (cp < 0x80) {
-            if (sequence_length != 1) {
-                for (octet_difference_type i = 0; i < sequence_length - 1; ++i)
+            if (length != 1) {
+                for (size_t i = 0; i < length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x800) {
-            if (sequence_length != 2) {
-                for (octet_difference_type i = 0; i < sequence_length - 1; ++i)
+            if (length != 2) {
+                for (size_t i = 0; i < length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x10000) {
-            if (sequence_length != 3) {
-                for (octet_difference_type i = 0; i < sequence_length - 1; ++i)
+            if (length != 3) {
+                for (size_t i = 0; i < length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
@@ -430,25 +441,28 @@ namespace internal
         uint32_t next(octet_iterator& it)
         {
             uint32_t cp = internal::mask8(*it);
-            if (cp < 0x80) 
-                ;
-            else if ((internal::mask8(*it) >> 5) == 0x6) {
-                it++;
-                cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
-            }
-            else if ((internal::mask8(*it) >> 4) == 0xe) { 
-                ++it; 
-                cp = ((cp << 12) & 0xffff) + ((internal::mask8(*it) << 6) & 0xfff);
-                ++it;
-                cp += (*it) & 0x3f;
-            }
-            else if ((internal::mask8(*it) >> 3) == 0x1e) {
-                ++it;
-                cp = ((cp << 18) & 0x1fffff) + ((internal::mask8(*it) << 12) & 0x3ffff);                
-                ++it;
-                cp += (internal::mask8(*it) << 6) & 0xfff;
-                ++it;
-                cp += (*it) & 0x3f; 
+            size_t length = utf8::internal::sequence_length(*it);
+            switch (length) {
+                case 1:
+                    break;
+                case 2:
+                    it++;
+                    cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
+                    break;
+                case 3:
+                    ++it; 
+                    cp = ((cp << 12) & 0xffff) + ((internal::mask8(*it) << 6) & 0xfff);
+                    ++it;
+                    cp += (*it) & 0x3f;
+                    break;
+                case 4:
+                    ++it;
+                    cp = ((cp << 18) & 0x1fffff) + ((internal::mask8(*it) << 12) & 0x3ffff);                
+                    ++it;
+                    cp += (internal::mask8(*it) << 6) & 0xfff;
+                    ++it;
+                    cp += (*it) & 0x3f; 
+                    break;
             }
             ++it;
             return cp;        
