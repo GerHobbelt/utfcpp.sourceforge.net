@@ -116,8 +116,11 @@ namespace internal
         return (cp <= CODE_POINT_MAX && !is_surrogate(cp) && cp != 0xfffe && cp != 0xffff);
     }  
 
-    inline size_t sequence_length(uint8_t lead)
+    template <typename octet_iterator>
+    inline typename std::iterator_traits<octet_iterator>::difference_type
+    sequence_length(octet_iterator lead_it)
     {
+        uint8_t lead = mask8(*lead_it);
         if (lead < 0x80) 
             return 1;
         else if ((lead >> 5) == 0x6)
@@ -137,7 +140,8 @@ namespace internal
     {
         uint32_t cp = mask8(*it);
         // Check the lead octet
-        size_t length = sequence_length(mask8(*it));
+        typedef typename std::iterator_traits<octet_iterator>::difference_type octet_differece_type;
+        octet_differece_type length = sequence_length(it);
 
         // "Shortcut" for ASCII characters
         if (length == 1) {
@@ -211,7 +215,7 @@ namespace internal
         }
         // Is the code point valid?
         if (!is_code_point_valid(cp)) {
-            for (size_t i = 0; i < length - 1; ++i) 
+            for (octet_differece_type i = 0; i < length - 1; ++i) 
                 --it;
             return INVALID_CODE_POINT;
         }
@@ -221,21 +225,21 @@ namespace internal
             
         if (cp < 0x80) {
             if (length != 1) {
-                for (size_t i = 0; i < length - 1; ++i)
+                for (octet_differece_type i = 0; i < length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x800) {
             if (length != 2) {
-                for (size_t i = 0; i < length - 1; ++i)
+                for (octet_differece_type i = 0; i < length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x10000) {
             if (length != 3) {
-                for (size_t i = 0; i < length - 1; ++i)
+                for (octet_differece_type i = 0; i < length - 1; ++i)
                     --it;
                 return OVERLONG_SEQUENCE;
             }
@@ -441,7 +445,7 @@ namespace internal
         uint32_t next(octet_iterator& it)
         {
             uint32_t cp = internal::mask8(*it);
-            size_t length = utf8::internal::sequence_length(*it);
+            typename std::iterator_traits<octet_iterator>::difference_type length = utf8::internal::sequence_length(it);
             switch (length) {
                 case 1:
                     break;
