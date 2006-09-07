@@ -35,7 +35,7 @@ int main(int argc, char** argv)
         string::iterator line_end   = line.end();
         line_end = find_invalid(line_start, line_end);
         if (line_end != line.end()) 
-            cout << "Line " << line_count << ": Invalid utf-8 at byte " << line.end() - line_end << '\n';
+            cout << "Line " << line_count << ": Invalid utf-8 at byte " << int(line.end() - line_end) << '\n';
 
         // Convert it to utf-16 and write to the file
         vector<unsigned short> utf16_line;
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
         unsigned char_count = 0;
         string::iterator it = line_start;
         while (it != line_end) {
-            unsigned cp = next(it, line_end);
+            next(it, line_end);
             char_count++;
         }
         if (char_count != utf32_line.size())
@@ -70,11 +70,11 @@ int main(int argc, char** argv)
         if (adv_it != line_end)
             cout << "Line " << line_count << ": Error in advance function" << '\n';
 
-        if (utf8::distance(line_start, line_end) != char_count)
+        if (string::size_type(utf8::distance(line_start, line_end)) != char_count)
             cout << "Line " << line_count << ": Error in distance function" << '\n';
 
         while (it != line_start) {
-            unsigned cp = previous(it, line.rend().base());
+            previous(it, line.rend().base());
             char_count--;
         }
         if (char_count != 0)
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
         char_count = 0;
         it = line_start;
         while (it != line_end) {
-            unsigned cp = unchecked::next(it);
+            unchecked::next(it);
             char_count++;
         }
         if (char_count != utf32_line.size())
@@ -120,11 +120,11 @@ int main(int argc, char** argv)
         if (adv_it != line_end)
             cout << "Line " << line_count << ": Error in unchecked::advance function" << '\n';
 
-        if (utf8::unchecked::distance(line_start, line_end) != char_count)
+        if (string::size_type(utf8::unchecked::distance(line_start, line_end)) != char_count)
             cout << "Line " << line_count << ": Error in unchecked::distance function" << '\n';
 
         while (it != line_start) {
-            unsigned cp = unchecked::previous(it);
+            unchecked::previous(it);
             char_count--;
         }
         if (char_count != 0)

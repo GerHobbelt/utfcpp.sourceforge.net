@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     // the UTF-16 result will not be larger than this (I hope :) )
     vector<wchar_t> temputf16;
     utf8::utf8to16(buf, buf + length, back_inserter(temputf16));
-    int wlength = temputf16.size();
+    vector<wchar_t>::size_type wlength = temputf16.size();
     wchar_t* utf16buf = new wchar_t[wlength];
 
     {
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
         
         {
             timer t(cout);
-            MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, buf, length, utf16iconvbuf, wlength);
+            MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, buf, length, utf16iconvbuf, int(wlength));
         }
         
     }
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 
         {
             timer t(cout);
-            WideCharToMultiByte(CP_UTF8, 0, utf16buf, wlength, buf, length, NULL, NULL);
+            WideCharToMultiByte(CP_UTF8, 0, utf16buf, int(wlength), buf, length, NULL, NULL);
         }
     }
 

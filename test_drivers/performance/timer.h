@@ -14,4 +14,8 @@ struct timer {
     std::clock_t start;
     std::clock_t end;
     std::ostream& report;
+
+private:
+    // just to surpress a VC++ 8.0 warning
+    timer& operator = (const timer&) {};
 };
