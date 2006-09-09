@@ -15,3 +15,5 @@ negativetest:
 utf8readertest:
 	cd utf8reader &&  $(MAKE) $@
 
+clean: 
+	rm smoke_test/smoketest regression_tests/regressiontest negative/negative utf8reader/utf8reader
