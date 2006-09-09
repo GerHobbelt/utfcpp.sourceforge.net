@@ -1,10 +1,14 @@
 utf8 cpp library
-Release 1.0 Beta 3
+Release 1.0 Final
 
-This rellease is all about one nasty bug being fixed.
+This is the first production release of the library.
 
 Bug Fixes: 
-[ 1531740 ] utf8::append does not work correctly for some code points.
+No bugs reported since Beta 3.
+
+Other changes from Beta 3:
+- Performance tuning: The library is now biased towards texts with lots of ASCII characters.
+- Vaaarious refactorings to improve readibility and reduce code duplication
 
 Files: utf8.h utf8cpp.html ReleaseNotes
 
