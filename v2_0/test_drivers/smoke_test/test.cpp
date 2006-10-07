@@ -121,6 +121,15 @@ int main()
     unsigned char byte_order_mark[] = {0xef, 0xbb, 0xbf};
     bool bbom = is_bom(byte_order_mark);
     assert (bbom == true);
+    
+    //replace_invalid
+    char invalid_sequence[] = "a\x80\xe0\xa0\xc0\xaf\xed\xa0\x80z";
+    vector<char> replace_invalid_result;
+    replace_invalid (invalid_sequence, invalid_sequence + sizeof(invalid_sequence), back_inserter(replace_invalid_result), '?');
+    bvalid = is_valid(replace_invalid_result.begin(), replace_invalid_result.end());
+    assert (bvalid);
+    char* fixed_invalid_sequence = "a????z";
+    assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(), fixed_invalid_sequence));
 
     //////////////////////////////////////////////////////////
     //// Unchecked variants

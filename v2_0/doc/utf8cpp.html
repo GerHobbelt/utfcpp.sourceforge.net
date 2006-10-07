@@ -324,7 +324,7 @@ assert (utf16result[3] == 0xdd1e);
 </pre>
 <p>In case of an invalid UTF-8 seqence, a
 <code>utf8::invalid_utf8</code> exception is thrown. If
-<code>last</code> does not point to the past-of-end of a UTF-8
+<code>end</code> does not point to the past-of-end of a UTF-8
 seqence, a <code>utf8::not_enough_room</code> exception is
 thrown.</p>
 <h4>utf8::utf32to8</h4>
@@ -373,7 +373,7 @@ assert (utf32result.size() == 2);
 </pre>
 <p>In case of an invalid UTF-8 seqence, a
 <code>utf8::invalid_utf8</code> exception is thrown. If
-<code>last</code> does not point to the past-of-end of a UTF-8
+<code>end</code> does not point to the past-of-end of a UTF-8
 seqence, a <code>utf8::not_enough_room</code> exception is
 thrown.</p>
 <h4>utf8::find_invalid</h4>
@@ -421,12 +421,49 @@ assert (bvalid == false);
 <code>find_invalid(start, end) == end;</code>. You may want to use
 it to make sure that a byte seqence is a valid UTF-8 string without
 the need to know where it fails if it is not valid.</p>
+<h4>utf8::replace_invalid</h4>
+<p>Replaces all invalid UTF-8 sequences within a string with a replacement marker.</p>
+<p><code>template &lt;typename octet_iterator, typename output_iterator&gt;
+output_iterator replace_invalid(octet_iterator start, octet_iterator end, output_iterator out, uint32_t replacement);
+</code></p>
+<p><code>template &lt;typename octet_iterator, typename output_iterator&gt;
+output_iterator replace_invalid(octet_iterator start, octet_iterator end, output_iterator out);
+</code></p>
+<p>
+<code>start</code>: an iterator pointing to the beginning of the
+UTF-8 string to look for invalid UTF-8 sequences.<br>
+<code>end</code>: an iterator pointing to pass-the-end of the UTF-8
+string to look for invalid UTF-8 sequences.<br>
+<code>out</code>: An output iterator to the range where the result of replacement is stored.<br>
+<code>replacement</code>: A Unicode code point for the replacement marker. The version without this
+parameter assumes the value <code>0xfffd</code><br>
+<u>Return value</u>: An iterator pointing to the place after the UTF-8 string with
+replaced invalid sequences.</p>
+<p>Example of use:</p>
+<pre>
+char invalid_sequence[] = "a\x80\xe0\xa0\xc0\xaf\xed\xa0\x80z";
+vector&lt;char&gt; replace_invalid_result;
+
+replace_invalid (invalid_sequence, invalid_sequence + sizeof(invalid_sequence), back_inserter(replace_invalid_result), '?');
+
+bvalid = is_valid(replace_invalid_result.begin(), replace_invalid_result.end());
+assert (bvalid);
+char* fixed_invalid_sequence = "a????z";
+assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(), fixed_invalid_sequence));
+</pre>
+<p>
+<code>replace_invalid</code> does not perform in-place replacement of invalid sequences. Rather, it produces a copy
+of the original string with the invalid sequences replaced with a replacement marker. Therefore, <code>out</code> must 
+not be in the <code>[start, end]</code> range.
+</p>
+<p>If <code>end</code> does not point to the past-of-end of a UTF-8 sequence, a <code>utf8::not_enough_room</code>
+exception is thrown.</p>
 <h4>utf8::is_bom</h4>
 <p>Checks whether a sequence of three octets is a UTF-8 byte order
 mark (BOM)</p>
 <code>template &lt;typename octet_iterator&gt; bool is_bom
 (octet_iterator it);</code>
-<p><code>it</code> Beginning of the 3-octet sequence to check<br>
+<p><code>it</code>: beginning of the 3-octet sequence to check<br>
 <u>Return value</u>: <code>true</code> if the sequence is UTF-8
 byte order mark; <code>false</code> if not.</p>
 <p>Example of use:</p>

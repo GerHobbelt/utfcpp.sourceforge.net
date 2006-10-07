@@ -136,7 +136,7 @@ namespace internal
     enum utf_error {OK, NOT_ENOUGH_ROOM, INVALID_LEAD, INCOMPLETE_SEQUENCE, OVERLONG_SEQUENCE, INVALID_CODE_POINT};
 
     template <typename octet_iterator>
-    utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t* code_point = 0)
+    utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t* code_point)
     {
         uint32_t cp = mask8(*it);
         // Check the lead octet
@@ -249,12 +249,55 @@ namespace internal
         return OK;    
     }
 
+    template <typename octet_iterator>
+    inline utf_error validate_next(octet_iterator& it, octet_iterator end) {
+        return validate_next(it, end, 0);
+    }
+
 } // namespace internal 
     
     /// The library API - functions intended to be called by the users
  
     // Byte order mark
     const uint8_t bom[] = {0xef, 0xbb, 0xbf}; 
+
+    template <typename octet_iterator, typename output_iterator>
+    output_iterator replace_invalid(octet_iterator start, octet_iterator end, output_iterator out, uint32_t replacement)
+    {
+        while (start != end) {
+            octet_iterator sequence_start = start;
+            internal::utf_error err_code = internal::validate_next(start, end);
+            switch (err_code) {
+                case internal::OK :
+                    for (octet_iterator it = sequence_start; it != start; ++it)
+                        *out++ = *it;
+                    break;
+                case internal::NOT_ENOUGH_ROOM:
+                    throw not_enough_room();
+                case internal::INVALID_LEAD:
+                    append (replacement, out);
+                    ++start;
+                    break;
+                case internal::INCOMPLETE_SEQUENCE:
+                case internal::OVERLONG_SEQUENCE:
+                case internal::INVALID_CODE_POINT:
+                    append (replacement, out);
+                    ++start;
+                    // just one replacement mark for the sequence
+                    while (internal::is_trail(*start) && start != end)
+                        ++start;
+                    break;
+            }
+        }   
+        return out;
+    }
+
+    template <typename octet_iterator, typename output_iterator>
+    inline output_iterator replace_invalid(octet_iterator start, octet_iterator end, output_iterator out)
+    {
+        static const uint32_t replacement_marker = internal::mask16(0xfffd);
+        return replace_invalid(start, end, out, replacement_marker);
+    }
 
     template <typename octet_iterator>
     octet_iterator find_invalid(octet_iterator start, octet_iterator end)
@@ -269,13 +312,13 @@ namespace internal
     }
 
     template <typename octet_iterator>
-    bool is_valid(octet_iterator start, octet_iterator end)
+    inline bool is_valid(octet_iterator start, octet_iterator end)
     {
         return (find_invalid(start, end) == end);
     }
 
     template <typename octet_iterator>
-    bool is_bom (octet_iterator it)
+    inline bool is_bom (octet_iterator it)
     {
         return (
             (internal::mask8(*it++)) == bom[0] &&
