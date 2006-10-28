@@ -38,7 +38,7 @@ namespace utf8
         uint32_t cp;
     public:
         invalid_code_point(uint32_t cp) : cp(cp) {}
-        const char* what() { return "Invalid code point"; }
+        virtual const char* what() const throw() { return "Invalid code point"; }
         uint32_t code_point() const {return cp;}
     };
 
@@ -46,7 +46,7 @@ namespace utf8
         uint8_t u8;
     public:
         invalid_utf8 (uint8_t u) : u8(u) {}
-        const char* what() { return "Invalid UTF-8"; }
+        virtual const char* what() const throw() { return "Invalid UTF-8"; }
         uint8_t utf8_octet() const {return u8;}
     };
 
@@ -54,13 +54,13 @@ namespace utf8
         uint16_t u16;
     public:
         invalid_utf16 (uint16_t u) : u16(u) {}
-        const char* what() { return "Invalid UTF-16"; }
+        virtual const char* what() const throw() { return "Invalid UTF-16"; }
         uint16_t utf16_word() const {return u16;}
     };
 
     class not_enough_room : public std::exception {
     public:
-        const char* what() { return "Not enough space"; }
+        virtual const char* what() const throw() { return "Not enough space"; }
     };
 
     /// The library API - functions intended to be called by the users
@@ -236,6 +236,45 @@ namespace utf8
 
         return result;
     }
+
+    // The iterator class
+    template <typename octet_iterator>
+    class iterator { 
+      static const typename std::iterator_traits<octet_iterator>::difference_type MAX_UTF8_SEQUENCE_LENGTH = 4;
+      octet_iterator it;
+      public:
+      explicit iterator (const octet_iterator& octet_it) : it(octet_it) {}
+      // the default "big three" are OK
+      uint32_t operator * () const
+      {
+          octet_iterator temp = it;
+          return next(temp, temp + MAX_UTF8_SEQUENCE_LENGTH);
+      }
+      bool operator == (const iterator& rhs) const { return (it == rhs.it); }
+      iterator& operator ++ () 
+      {
+          next(it, it + MAX_UTF8_SEQUENCE_LENGTH);
+          return *this;
+      }
+      iterator operator ++ (int)
+      {
+          iterator temp = *this;
+          next(it, it + MAX_UTF8_SEQUENCE_LENGTH);
+          return temp;
+      }  
+      iterator& operator -- ()
+      {
+          previous(it, it - MAX_UTF8_SEQUENCE_LENGTH);
+          return *this;
+      }
+      iterator operator -- (int)
+      {
+          iterator temp = *this;
+          previous(it, it - MAX_UTF8_SEQUENCE_LENGTH);
+          return temp;
+      }
+    }; // class iterator
+
 } // namespace utf8
 
 #endif //header guard

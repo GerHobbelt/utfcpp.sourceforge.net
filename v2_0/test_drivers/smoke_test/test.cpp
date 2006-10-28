@@ -1,7 +1,6 @@
 
 #include <cassert>
 #include <vector>
-#include <iterator>
 #include "../../source/utf8.h"
 using namespace utf8;
 using namespace std;
@@ -130,6 +129,22 @@ int main()
     assert (bvalid);
     char* fixed_invalid_sequence = "a????z";
     assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(), fixed_invalid_sequence));
+
+    // iterator
+    utf8::iterator<char*> it(threechars);
+    utf8::iterator<char*> it2 = it;
+    assert (it2 == it);
+    assert (*it == 0x10346);
+    assert (*(++it) == 0x65e5);
+    assert ((*it++) == 0x65e5);
+    assert (*it == 0x0448);
+    utf8::iterator<char*> endit (threechars + 9);  
+    assert (++it == endit);
+    assert (*(--it) == 0x0448);
+    assert ((*it--) == 0x0448);
+    assert (*it == 0x65e5);
+    assert (--it == utf8::iterator<char*>(threechars));
+    assert (*it == 0x10346);
 
     //////////////////////////////////////////////////////////
     //// Unchecked variants
