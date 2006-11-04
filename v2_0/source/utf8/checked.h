@@ -29,7 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #define UTF8_FOR_CPP_CHECKED_H_2675DCD0_9480_4c0c_B92A_CC14C027B731
 
 #include "core.h"
-#include <exception>
+#include <stdexcept>
 
 namespace utf8
 {
@@ -152,7 +152,18 @@ namespace utf8
         return cp;        
     }
 
+    template <typename octet_iterator>
+    uint32_t prior(octet_iterator& it, octet_iterator start)
+    {
+        octet_iterator end = it;
+        while (internal::is_trail(*(--it))) 
+            if (it < start)
+                throw invalid_utf8(*it); // error - no lead byte in the sequence
+        octet_iterator temp = it;
+        return next(temp, end);
+    }
 
+    /// Deprecated in versions that include "prior"
     template <typename octet_iterator>
     uint32_t previous(octet_iterator& it, octet_iterator pass_start)
     {
@@ -240,37 +251,50 @@ namespace utf8
     // The iterator class
     template <typename octet_iterator>
     class iterator { 
-      static const typename std::iterator_traits<octet_iterator>::difference_type MAX_UTF8_SEQUENCE_LENGTH = 4;
       octet_iterator it;
+      octet_iterator range_start;
+      octet_iterator range_end;
       public:
-      explicit iterator (const octet_iterator& octet_it) : it(octet_it) {}
+      explicit iterator (const octet_iterator& octet_it, 
+                         const octet_iterator& range_start,
+                         const octet_iterator& range_end) :
+               it(octet_it), range_start(range_start), range_end(range_end)
+      {
+          if (it < range_start || it > range_end)
+            throw std::out_of_range("Invalid utf-8 iterator position");
+      }
       // the default "big three" are OK
       uint32_t operator * () const
       {
           octet_iterator temp = it;
-          return next(temp, temp + MAX_UTF8_SEQUENCE_LENGTH);
+          return next(temp, range_end);
       }
-      bool operator == (const iterator& rhs) const { return (it == rhs.it); }
+      bool operator == (const iterator& rhs) const 
+      { 
+          if (range_start != rhs.range_start && range_end != rhs.range_end)
+              throw std::logic_error("Comparing utf-8 iterators defined with different ranges");
+          return (it == rhs.it);
+      }
       iterator& operator ++ () 
       {
-          next(it, it + MAX_UTF8_SEQUENCE_LENGTH);
+          next(it, range_end);
           return *this;
       }
       iterator operator ++ (int)
       {
           iterator temp = *this;
-          next(it, it + MAX_UTF8_SEQUENCE_LENGTH);
+          next(it, range_end);
           return temp;
       }  
       iterator& operator -- ()
       {
-          previous(it, it - MAX_UTF8_SEQUENCE_LENGTH);
+          prior(it, range_start);
           return *this;
       }
       iterator operator -- (int)
       {
           iterator temp = *this;
-          previous(it, it - MAX_UTF8_SEQUENCE_LENGTH);
+          prior(it, range_start);
           return temp;
       }
     }; // class iterator

@@ -22,6 +22,8 @@ int main()
     end = append(0x10346, u);
     assert (u[0] == 0xf0 && u[1] == 0x90 && u[2] == 0x8d && u[3] == 0x86 && u[4] == 0);
 
+    
+
     //next
     char* twochars = "\xe6\x97\xa5\xd1\x88";
     char* w = twochars;
@@ -41,8 +43,24 @@ int main()
     assert (cp == 0x0448);
     assert (w == threechars + 9);
 
+    //prior
+    w = twochars + 3;
+    cp = prior (w, twochars);
+    assert (cp == 0x65e5);
+    assert (w == twochars);
 
-    //previous
+    w = threechars + 9;
+    cp = prior(w, threechars);
+    assert (cp == 0x0448);
+    assert (w == threechars + 7);
+    cp = prior(w, threechars);
+    assert (cp == 0x65e5);
+    assert (w == threechars + 4);
+    cp = prior(w, threechars);
+    assert (cp == 0x10346);
+    assert (w == threechars); 
+
+    //previous (deprecated)
     w = twochars + 3;
     cp = previous (w, twochars - 1);
     assert (cp == 0x65e5);
@@ -131,19 +149,19 @@ int main()
     assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(), fixed_invalid_sequence));
 
     // iterator
-    utf8::iterator<char*> it(threechars);
+    utf8::iterator<char*> it(threechars, threechars, threechars + 9);
     utf8::iterator<char*> it2 = it;
     assert (it2 == it);
     assert (*it == 0x10346);
     assert (*(++it) == 0x65e5);
     assert ((*it++) == 0x65e5);
     assert (*it == 0x0448);
-    utf8::iterator<char*> endit (threechars + 9);  
+    utf8::iterator<char*> endit (threechars + 9, threechars, threechars + 9);  
     assert (++it == endit);
     assert (*(--it) == 0x0448);
     assert ((*it--) == 0x0448);
     assert (*it == 0x65e5);
-    assert (--it == utf8::iterator<char*>(threechars));
+    assert (--it == utf8::iterator<char*>(threechars, threechars, threechars + 9));
     assert (*it == 0x10346);
 
     //////////////////////////////////////////////////////////
@@ -179,7 +197,8 @@ int main()
     assert (w == threechars + 9);
 
 
-    //previous
+    //previous (calls prior internally)
+
     w = twochars + 3;
     cp = unchecked::previous (w);
     assert (cp == 0x65e5);

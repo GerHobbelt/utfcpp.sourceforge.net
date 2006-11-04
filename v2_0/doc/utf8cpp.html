@@ -6,50 +6,65 @@
     <meta name="description" content=
     "A simple, portable and lightweigt C++ library for easy handling of UTF-8 encoded strings">
     <meta name="keywords" content="UTF-8 C++ portable utf8 unicode generic templates">
+    <meta name="author" content="Nemanja Trifunovic">
     <title>
       UTF8-CPP: UTF-8 with C++ in a Portable Way
     </title>
     <style type="text/css">
     <!--
     span.return_value {
-      font-weight: bold;
+      color: brown;
     }
-    span.cpp_keyword {
+    span.keyword {
       color: blue;
     }
     span.preprocessor {
-    color: navy;
+      color: navy;
+    }
+    span.literal {
+      color: olive;
+    }
+    span.comment {
+      color: green;
+    }
+    code {
+      font-weight: bold; 
+    }
+    ul.toc {
+      list-style-type: none;
     }
     -->
-    </style>
+        </style>
   </head>
   <body>
     <p>
       <a href="https://sourceforge.net/projects/utfcpp">The Sourceforge project page</a>
     </p>
-    <h2>
-      Table of Contents
-    </h2>
-    <ul>
-      <li>
-        <a href="#introduction">Introduction</a>
-      </li>
-      <li>
-        <a href="#examples">Examples of Use</a>
-      </li>
-      <li>
-        <a href="#reference">Reference</a>
-      </li>
-      <li>
-        <a href="#points">Points of Interest</a>
-      </li>
-      <li>
-        <a href="#conclusion">Conclusion</a>
-      </li>
-      <li>
-        <a href="#references">References</a>
-      </li>
-    </ul>
+    <div id="toc">
+      <h2>
+        Table of Contents
+      </h2>
+      <ul class="toc">
+        <li>
+          <a href="#introduction">Introduction</a>
+        </li>
+        <li>
+          <a href="#examples">Examples of Use</a>
+        </li>
+        <li>
+          <a href="#reference">Reference</a>
+        </li>
+        <li>
+          <a href="#points">Points of Interest</a>
+        </li>
+        <li>
+          <a href="#conclusion">Conclusion</a>
+        </li>
+        <li>
+          <a href="#references">References</a>
+        </li>
+      </ul>
+    </div>
     <h2 id="introduction">
       Introduction
     </h2>
@@ -91,54 +106,64 @@
 <span class="preprocessor">#include &lt;iostream&gt;</span>
 <span class="preprocessor">#include &lt;string&gt;</span>
 <span class="preprocessor">#include &lt;vector&gt;</span>
-<span class="cpp_keyword">using namespace</span> std;
-<span class="cpp_keyword">int</span> main()
+<span class="keyword">using namespace</span> std;
+<span class="keyword">int</span> main()
 {
-    <span class="cpp_keyword">if</span> (argc != 2) {
-        cout &lt;&lt; "\nUsage: docsample filename\n";
-        <span class="cpp_keyword">return</span> 0;
+    <span class="keyword">if</span> (argc != <span class="literal">2</span>) {
+        cout &lt;&lt; <span class="literal">"\nUsage: docsample filename\n"</span>;
+        <span class="keyword">return</span> <span class="literal">0</span>;
     }
-    <span class="cpp_keyword">const char</span>* test_file_path = argv[1];
-    // Open the test file (must be UTF-8 encoded)
+    <span class="keyword">const char</span>* test_file_path = argv[1];
+    <span class="comment">// Open the test file (must be UTF-8 encoded)</span>
     ifstream fs8(test_file_path);
-    <span class="cpp_keyword">if </span>(!fs8.is_open()) {
-    cout &lt;&lt; "Could not open " &lt;&lt; test_file_path &lt;&lt; endl;
-    <span class="cpp_keyword">return</span> 0;
+    <span class="keyword">if</span> (!fs8.is_open()) {
+    cout &lt;&lt; <span class=
+"literal">"Could not open "</span> &lt;&lt; test_file_path &lt;&lt; endl;
+    <span class="keyword">return</span> <span class="literal">0</span>;
     }
-    // Read the first line of the file
-    <span class="cpp_keyword">unsigned</span> line_count = 1;
+    <span class="comment">// Read the first line of the file</span>
+    <span class="keyword">unsigned</span> line_count = <span class="literal">1</span>;
     string line;
-    <span class="cpp_keyword">if </span>(!getline(fs8, line)) 
-        <span class="cpp_keyword">return</span> 0;
-    // Look for utf-8 byte-order mark at the beginning
-    <span class="cpp_keyword">if </span>(line.size() &gt; 2) {
-        <span class="cpp_keyword">if </span>(utf8::is_bom(line.c_str()))
-            cout &lt;&lt; "There is a byte order mark at the beginning of the file\n";
+    <span class="keyword">if</span> (!getline(fs8, line)) 
+        <span class="keyword">return</span> <span class="literal">0</span>;
+    <span class="comment">// Look for utf-8 byte-order mark at the beginning</span>
+    <span class="keyword">if</span> (line.size() &gt; <span class="literal">2</span>) {
+        <span class="keyword">if</span> (utf8::is_bom(line.c_str()))
+            cout &lt;&lt; <span class=
+"literal">"There is a byte order mark at the beginning of the file\n"</span>;
     }
-    // Play with all the lines in the file
-    <span class="cpp_keyword">do</span> {
+    <span class="comment">// Play with all the lines in the file</span>
+    <span class="keyword">do</span> {
         // check for invalid utf-8 (for a simple yes/no check, there is also utf8::is_valid function)
         string::iterator end_it = utf8::find_invalid(line.begin(), line.end());
-        <span class="cpp_keyword">if </span>(end_it != line.end()) {
-            cout &lt;&lt; "Invalid UTF-8 encoding detected at line " &lt;&lt; line_count &lt;&lt; "\n";
-            cout &lt;&lt; "This part is fine: " &lt;&lt; string(line.begin(), end_it) &lt;&lt; "\n";
+        <span class="keyword">if</span> (end_it != line.end()) {
+            cout &lt;&lt; <span class=
+"literal">"Invalid UTF-8 encoding detected at line "</span> &lt;&lt; line_count &lt;&lt; <span
+ class="literal">"\n"</span>;
+            cout &lt;&lt; <span class=
+"literal">"This part is fine: "</span> &lt;&lt; string(line.begin(), end_it) &lt;&lt; <span
+ class="literal">"\n"</span>;
         }
-        // Get the line length (at least for the valid part)
-        <span class="cpp_keyword">int</span> length = utf8::distance(line.begin(), end_it);
-        cout &lt;&lt; "Length of line " &lt;&lt; line_count &lt;&lt; " is " &lt;&lt; length &lt;&lt;  "\n";
-        // Convert it to utf-16
+        <span class="comment">// Get the line length (at least for the valid part)</span>
+        <span class="keyword">int</span> length = utf8::distance(line.begin(), end_it);
+        cout &lt;&lt; <span class=
+"literal">"Length of line "</span> &lt;&lt; line_count &lt;&lt; <span class=
+"literal">" is "</span> &lt;&lt; length &lt;&lt;  <span class="literal">"\n"</span>;
+        <span class="comment">// Convert it to utf-16</span>
         vector&lt;unsigned short&gt; utf16line;
         utf8::utf8to16(line.begin(), end_it, back_inserter(utf16line));
-        // And back to utf-8;
+        <span class="comment">// And back to utf-8</span>
         string utf8line; 
         utf8::utf16to8(utf16line.begin(), utf16line.end(), back_inserter(utf8line));
-        // Confirm that the conversion went OK:
-        <span class="cpp_keyword">if </span>(utf8line != string(line.begin(), end_it))
-            cout &lt;&lt; "Error in UTF-16 conversion at line: " &lt;&lt; line_count &lt;&lt; "\n";        
+        <span class="comment">// Confirm that the conversion went OK:</span>
+        <span class="keyword">if</span> (utf8line != string(line.begin(), end_it))
+            cout &lt;&lt; <span class=
+"literal">"Error in UTF-16 conversion at line: "</span> &lt;&lt; line_count &lt;&lt; <span
+ class="literal">"\n"</span>;        
         getline(fs8, line);
         line_count++;
-    } <span class="cpp_keyword">while</span> (!fs8.eof());
-    <span class="cpp_keyword">return</span> 0;
+    } <span class="keyword">while</span> (!fs8.eof());
+    <span class="keyword">return</span> <span class="literal">0</span>;
 }
 </pre>
     <p>
@@ -164,25 +189,35 @@
       Encodes a 32 bit code point as a UTF-8 sequence of octets and appends the sequence
       to a UTF-8 string.
     </p>
-    <code>
-<span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt;
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt;
 octet_iterator append(uint32_t cp, octet_iterator result);
-    </code> 
+   
+</pre>
     <p>
       <code>cp</code>: A 32 bit integer representing a code point to append to the
       sequence.<br>
-      <code>result</code>: An output iterator to the place in the sequence where to
+       <code>result</code>: An output iterator to the place in the sequence where to
       append the code point.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the newly appended
-      sequence.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the newly appended sequence.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">unsigned char</span> u[5] = {0,0,0,0,0};
-<span class="cpp_keyword">unsigned char</span>* end = append(0x0448, u);
-assert (u[0] == 0xd1 &amp;&amp; u[1] == 0x88 &amp;&amp; u[2] == 0 &amp;&amp; u[3] == 0 &amp;&amp; u[4] == 0);
+<span class="keyword">unsigned char</span> u[<span class="literal">5</span>] = {<span
+class="literal">0</span>,<span class="literal">0</span>,<span class=
+"literal">0</span>,<span class="literal">0</span>,<span class="literal">0</span>};
+<span class="keyword">unsigned char</span>* end = append(<span class=
+"literal">0x0448</span>, u);
+assert (u[<span class="literal">0</span>] == <span class=
+"literal">0xd1</span> &amp;&amp; u[<span class="literal">1</span>] == <span class=
+"literal">0x88</span> &amp;&amp; u[<span class="literal">2</span>] == <span class=
+"literal">0</span> &amp;&amp; u[<span class="literal">3</span>] == <span class=
+"literal">0</span> &amp;&amp; u[<span class="literal">4</span>] == <span class=
+"literal">0</span>);
 </pre>
     <p>
       Note that <code>append</code> does not allocate any memory - it is the burden of
@@ -202,26 +237,32 @@ assert (u[0] == 0xd1 &amp;&amp; u[1] == 0x88 &amp;&amp; u[2] == 0 &amp;&amp; u[3
       Given the iterator to the beginning of the UTF-8 sequence, it returns the code
       point and moves the iterator to the next position.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; uint32_t next(octet_iterator&amp; it,
-    octet_iterator end);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+uint32_t next(octet_iterator&amp; it, octet_iterator end);
+   
+</pre>
     <p>
       <code>it</code>: a reference to an iterator pointing to the beginning of an UTF-8
       encoded code point. After the function returns, it is incremented to point to the
       beginning of the next code point.<br>
-      <code>end</code>: end of the UTF-8 sequence to be processed. If <code>it</code>
+       <code>end</code>: end of the UTF-8 sequence to be processed. If <code>it</code>
       gets equal to <code>end</code> during the extraction of a code point, an
       <code>utf8::not_enough_room</code> exception is thrown.<br>
-      <span class="return_value">Return value</span>: the 32 bit representation of the processed UTF-8 code point.
+       <span class="return_value">Return value</span>: the 32 bit representation of the
+      processed UTF-8 code point.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-<span class="cpp_keyword">char</span>* w = twochars;
-<span class="cpp_keyword">int</span> cp = next(w, twochars + 6);
-assert (cp == 0x65e5);
-assert (w == twochars + 3);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">char</span>* w = twochars;
+<span class="keyword">int</span> cp = next(w, twochars + <span class="literal">6</span>);
+assert (cp == <span class="literal">0x65e5</span>);
+assert (w == twochars + <span class="literal">3</span>);
 </pre>
     <p>
       This function is typically used to iterate through a UTF-8 encoded string.
@@ -238,26 +279,34 @@ assert (w == twochars + 3);
       decreases the iterator until it hits the beginning of the previous UTF-8 encoded
       code point and returns the 32 bits representation of the code point.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; uint32_t previous(octet_iterator&amp;
-    it, octet_iterator pass_start);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+uint32_t previous(octet_iterator&amp; it, octet_iterator pass_start);
+   
+</pre>
     <p>
       <code>it</code>: a reference pointing to an octet within a UTF-8 encoded string.
       After the function returns, it is decremented to point to the beginning of the
       previous code point.<br>
-      <code>pass_start</code>: an iterator to the point in the sequence where the search
+       <code>pass_start</code>: an iterator to the point in the sequence where the search
       for the beginning of a code point is aborted if no result was reached. It is a
       safety measure to prevent passing the beginning of the string in the search for a
       UTF-8 lead octet.<br>
-      <span class="return_value">Return value</span>: the 32 bit representation of the previous code point.
+       <span class="return_value">Return value</span>: the 32 bit representation of the
+      previous code point.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-<span class="cpp_keyword">unsigned char</span>* w = twochars + 3;
-<span class="cpp_keyword">int</span> cp = previous (w, twochars - 1);
-assert (cp == 0x65e5);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">unsigned char</span>* w = twochars + <span class=
+"literal">3</span>;
+<span class="keyword">int</span> cp = previous (w, twochars - <span class=
+"literal">1</span>);
+assert (cp == <span class="literal">0x65e5</span>);
 assert (w == twochars);
 </pre>
     <p>
@@ -280,15 +329,20 @@ assert (w == twochars);
       Advances an iterator by the specified number of code points within an UTF-8
       sequence.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator, typename distance_type&gt; <span class="cpp_keyword">void</span> advance
-    (octet_iterator&amp; it, distance_type n, octet_iterator end);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator, typename distance_type&gt; 
+<span class=
+"keyword">void</span> advance (octet_iterator&amp; it, distance_type n, octet_iterator end);
+   
+</pre>
     <p>
       <code>it</code>: a reference to an iterator pointing to the beginning of an UTF-8
       encoded code point. After the function returns, it is incremented to point to the
       nth following code point.<br>
-      <code>n</code>: a positive integer that shows how many code points we want to
+       <code>n</code>: a positive integer that shows how many code points we want to
       advance.<br>
-      <code>end</code>: end of the UTF-8 sequence to be processed. If <code>it</code>
+       <code>end</code>: end of the UTF-8 sequence to be processed. If <code>it</code>
       gets equal to <code>end</code> during the extraction of a code point, an
       <code>utf8::not_enough_room</code> exception is thrown.<br>
     </p>
@@ -296,10 +350,11 @@ assert (w == twochars);
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-<span class="cpp_keyword">unsigned char</span>* w = twochars;
-advance (w, 2, twochars + 6);
-assert (w == twochars + 5);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">unsigned char</span>* w = twochars;
+advance (w, <span class="literal">2</span>, twochars + <span class="literal">6</span>);
+assert (w == twochars + <span class="literal">5</span>);
 </pre>
     <p>
       This function works only "forward". In case of a negative <code>n</code>, there is
@@ -316,23 +371,29 @@ assert (w == twochars + 5);
       Given the iterators to two UTF-8 encoded code points in a seqence, returns the
       number of code points between them.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; <span class="cpp_keyword">typename</span>
-    std::iterator_traits&lt;octet_iterator&gt;::difference_type distance (octet_iterator
-    first, octet_iterator last);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+<span class=
+"keyword">typename</span> std::iterator_traits&lt;octet_iterator&gt;::difference_type distance (octet_iterator first, octet_iterator last);
+   
+</pre>
     <p>
       <code>first</code>: an iterator to a beginning of a UTF-8 encoded code point.<br>
-      <code>last</code>: an iterator to a "post-end" of the last UTF-8 encoded code point
-      in the sequence we are trying to determine the length. It can be the beginning of a
-      new code point, or not.<br>
-      <span class="return_value">Return value</span> the distance between the iterators, in code points.
+       <code>last</code>: an iterator to a "post-end" of the last UTF-8 encoded code
+      point in the sequence we are trying to determine the length. It can be the
+      beginning of a new code point, or not.<br>
+       <span class="return_value">Return value</span> the distance between the iterators,
+      in code points.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-size_t dist = utf8::distance(twochars, twochars + 5);
-assert (dist == 2);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+size_t dist = utf8::distance(twochars, twochars + <span class="literal">5</span>);
+assert (dist == <span class="literal">2</span>);
 </pre>
     <p>
       This function is used to find the length (in code points) of a UTF-8 encoded
@@ -352,27 +413,35 @@ assert (dist == 2);
     <p>
       Converts a UTF-16 encoded string to UTF-8.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> u16bit_iterator, <span class="cpp_keyword">typename</span> octet_iterator&gt;
-    octet_iterator utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator
-    result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> u16bit_iterator, <span class=
+"keyword">typename</span> octet_iterator&gt;
+octet_iterator utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator result);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-16 encoded
       string to convert.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-16 encoded string
-      to convert.<br>
-      <code>result</code>: an output iterator to the place in the UTF-8 string where to
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-16 encoded
+      string to convert.<br>
+       <code>result</code>: an output iterator to the place in the UTF-8 string where to
       append the result of conversion.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the appended UTF-8
-      string.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the appended UTF-8 string.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">unsigned short</span> utf16string[] = {0x41, 0x0448, 0x65e5, 0xd834, 0xdd1e};
-vector&lt;<span class="cpp_keyword">unsigned char</span>&gt; utf8result;
-utf16to8(utf16string, utf16string + 5, back_inserter(utf8result));
-assert (utf8result.size() == 10);    
+<span class="keyword">unsigned short</span> utf16string[] = {<span class=
+"literal">0x41</span>, <span class="literal">0x0448</span>, <span class=
+"literal">0x65e5</span>, <span class="literal">0xd834</span>, <span class=
+"literal">0xdd1e</span>};
+vector&lt;<span class="keyword">unsigned char</span>&gt; utf8result;
+utf16to8(utf16string, utf16string + <span class=
+"literal">5</span>, back_inserter(utf8result));
+assert (utf8result.size() == <span class="literal">10</span>);    
 </pre>
     <p>
       In case of invalid UTF-16 sequence, a <code>utf8::invalid_utf16</code> exception is
@@ -384,28 +453,35 @@ assert (utf8result.size() == 10);
     <p>
       Converts an UTF-8 encoded string to UTF-16
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> u16bit_iterator, typename octet_iterator&gt;
-    u16bit_iterator utf8to16 (octet_iterator start, octet_iterator end, u16bit_iterator
-    result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> u16bit_iterator, typename octet_iterator&gt;
+u16bit_iterator utf8to16 (octet_iterator start, octet_iterator end, u16bit_iterator result);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-8 encoded
       string to convert. &lt; br /&gt; <code>end</code>: an iterator pointing to
       pass-the-end of the UTF-8 encoded string to convert.<br>
-      <code>result</code>: an output iterator to the place in the UTF-16 string where to
+       <code>result</code>: an output iterator to the place in the UTF-16 string where to
       append the result of conversion.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the appended UTF-16
-      string.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the appended UTF-16 string.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span> utf8_with_surrogates[] = "\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e";
-vector &lt;<span class="cpp_keyword">unsigned short</span>&gt; utf16result;
-utf8to16(utf8_with_surrogates, utf8_with_surrogates + 9, back_inserter(utf16result));
-assert (utf16result.size() == 4);
-assert (utf16result[2] == 0xd834);
-assert (utf16result[3] == 0xdd1e);
+<span class="keyword">char</span> utf8_with_surrogates[] = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e"</span>;
+vector &lt;<span class="keyword">unsigned short</span>&gt; utf16result;
+utf8to16(utf8_with_surrogates, utf8_with_surrogates + <span class=
+"literal">9</span>, back_inserter(utf16result));
+assert (utf16result.size() == <span class="literal">4</span>);
+assert (utf16result[<span class="literal">2</span>] == <span class=
+"literal">0xd834</span>);
+assert (utf16result[<span class="literal">3</span>] == <span class=
+"literal">0xdd1e</span>);
 </pre>
     <p>
       In case of an invalid UTF-8 seqence, a <code>utf8::invalid_utf8</code> exception is
@@ -418,27 +494,33 @@ assert (utf16result[3] == 0xdd1e);
     <p>
       Converts a UTF-32 encoded string to UTF-8.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator, typename u32bit_iterator&gt;
-    octet_iterator utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator
-    result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator, typename u32bit_iterator&gt;
+octet_iterator utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-32 encoded
       string to convert.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-32 encoded string
-      to convert.<br>
-      <code>result</code>: an output iterator to the place in the UTF-8 string where to
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-32 encoded
+      string to convert.<br>
+       <code>result</code>: an output iterator to the place in the UTF-8 string where to
       append the result of conversion.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the appended UTF-8
-      string.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the appended UTF-8 string.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">int</span> utf32string[] = {0x448, 0x65E5, 0x10346, 0};
-vector&lt;<span class="cpp_keyword">unsigned char</span>&gt; utf8result;
-utf32to8(utf32string, utf32string + 3, back_inserter(utf8result));
-assert (utf8result.size() == 9);
+<span class="keyword">int</span> utf32string[] = {<span class=
+"literal">0x448</span>, <span class="literal">0x65E5</span>, <span class=
+"literal">0x10346</span>, <span class="literal">0</span>};
+vector&lt;<span class="keyword">unsigned char</span>&gt; utf8result;
+utf32to8(utf32string, utf32string + <span class=
+"literal">3</span>, back_inserter(utf8result));
+assert (utf8result.size() == <span class="literal">9</span>);
 </pre>
     <p>
       In case of invalid UTF-32 string, a <code>utf8::invalid_code_point</code> exception
@@ -450,27 +532,33 @@ assert (utf8result.size() == 9);
     <p>
       Converts a UTF-8 encoded string to UTF-32.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator, <span class="cpp_keyword">typename</span> u32bit_iterator&gt;
-    u32bit_iterator utf8to32 (octet_iterator start, octet_iterator end, u32bit_iterator
-    result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator, <span class=
+"keyword">typename</span> u32bit_iterator&gt;
+u32bit_iterator utf8to32 (octet_iterator start, octet_iterator end, u32bit_iterator result);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-8 encoded
       string to convert.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 encoded string
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 encoded string
       to convert.<br>
-      <code>result</code>: an output iterator to the place in the UTF-32 string where to
+       <code>result</code>: an output iterator to the place in the UTF-32 string where to
       append the result of conversion.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the appended UTF-32
-      string.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the appended UTF-32 string.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-vector&lt;<span class="cpp_keyword">int</span>&gt; utf32result;
-utf8to32(twochars, twochars + 5, back_inserter(utf32result));
-assert (utf32result.size() == 2);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+vector&lt;<span class="keyword">int</span>&gt; utf32result;
+utf8to32(twochars, twochars + <span class=
+"literal">5</span>, back_inserter(utf32result));
+assert (utf32result.size() == <span class="literal">2</span>);
 </pre>
     <p>
       In case of an invalid UTF-8 seqence, a <code>utf8::invalid_utf8</code> exception is
@@ -483,23 +571,30 @@ assert (utf32result.size() == 2);
     <p>
       Detects an invalid sequence within a UTF-8 string.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; octet_iterator
-    find_invalid(octet_iterator start, octet_iterator end);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+octet_iterator find_invalid(octet_iterator start, octet_iterator end);
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-8 string to
       test for validity.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 string to test
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 string to test
       for validity.<br>
-      <span class="return_value">Return value</span>: an iterator pointing to the first invalid octet in the UTF-8
-      string. In case none were found, equals <code>end</code>.
+       <span class="return_value">Return value</span>: an iterator pointing to the first
+      invalid octet in the UTF-8 string. In case none were found, equals
+      <code>end</code>.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span> utf_invalid[] = "\xe6\x97\xa5\xd1\x88\xfa";
-<span class="cpp_keyword">char</span>* invalid = find_invalid(utf_invalid, utf_invalid + 6);
-assert (invalid == utf_invalid + 5);
+<span class="keyword">char</span> utf_invalid[] = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88\xfa"</span>;
+<span class=
+"keyword">char</span>* invalid = find_invalid(utf_invalid, utf_invalid + <span class=
+"literal">6</span>);
+assert (invalid == utf_invalid + <span class="literal">5</span>);
 </pre>
     <p>
       This function is typically used to make sure a UTF-8 string is valid before
@@ -512,20 +607,26 @@ assert (invalid == utf_invalid + 5);
     <p>
       Checks whether a sequence of octets is a valid UTF-8 string.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; <span class="cpp_keyword">bool</span> is_valid(octet_iterator start,
-    octet_iterator end);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+<span class="keyword">bool</span> is_valid(octet_iterator start, octet_iterator end);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-8 string to
       test for validity.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 string to test
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 string to test
       for validity.<br>
-      <span class="return_value">Return value</span>: <code>true</code> if the sequence is a valid UTF-8 string;
-      <code>false</code> if not.
+       <span class="return_value">Return value</span>: <code>true</code> if the sequence
+      is a valid UTF-8 string; <code>false</code> if not.
     </p>
     Example of use: 
 <pre>
-<span class="cpp_keyword">char</span> utf_invalid[] = "\xe6\x97\xa5\xd1\x88\xfa";
-<span class="cpp_keyword">bool</span> bvalid = is_valid(utf_invalid, utf_invalid + 6);
+<span class="keyword">char</span> utf_invalid[] = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88\xfa"</span>;
+<span class="keyword">bool</span> bvalid = is_valid(utf_invalid, utf_invalid + <span
+class="literal">6</span>);
 assert (bvalid == false);
 </pre>
     <p>
@@ -539,38 +640,42 @@ assert (bvalid == false);
     <p>
       Replaces all invalid UTF-8 sequences within a string with a replacement marker.
     </p>
-    <p>
-      <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator, <span class="cpp_keyword">typename</span> output_iterator&gt;
-      output_iterator replace_invalid(octet_iterator start, octet_iterator end,
-      output_iterator out, uint32_t replacement);</code>
-    </p>
-    <p>
-      <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator, <span class="cpp_keyword">typename</span> output_iterator&gt;
-      output_iterator replace_invalid(octet_iterator start, octet_iterator end,
-      output_iterator out);</code>
-    </p>
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator, <span class=
+"keyword">typename</span> output_iterator&gt;
+output_iterator replace_invalid(octet_iterator start, octet_iterator end, output_iterator out, uint32_t replacement);
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator, <span class=
+"keyword">typename</span> output_iterator&gt;
+output_iterator replace_invalid(octet_iterator start, octet_iterator end, output_iterator out);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-8 string to
       look for invalid UTF-8 sequences.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 string to look
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 string to look
       for invalid UTF-8 sequences.<br>
-      <code>out</code>: An output iterator to the range where the result of replacement
+       <code>out</code>: An output iterator to the range where the result of replacement
       is stored.<br>
-      <code>replacement</code>: A Unicode code point for the replacement marker. The
+       <code>replacement</code>: A Unicode code point for the replacement marker. The
       version without this parameter assumes the value <code>0xfffd</code><br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the UTF-8 string with
-      replaced invalid sequences.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the UTF-8 string with replaced invalid sequences.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span> invalid_sequence[] = "a\x80\xe0\xa0\xc0\xaf\xed\xa0\x80z";
-vector&lt;<span class="cpp_keyword">char</span>&gt; replace_invalid_result;
-replace_invalid (invalid_sequence, invalid_sequence + sizeof(invalid_sequence), back_inserter(replace_invalid_result), '?');
+<span class="keyword">char</span> invalid_sequence[] = <span class=
+"literal">"a\x80\xe0\xa0\xc0\xaf\xed\xa0\x80z"</span>;
+vector&lt;<span class="keyword">char</span>&gt; replace_invalid_result;
+replace_invalid (invalid_sequence, invalid_sequence + sizeof(invalid_sequence), back_inserter(replace_invalid_result), <span
+ class="literal">'?'</span>);
 bvalid = is_valid(replace_invalid_result.begin(), replace_invalid_result.end());
 assert (bvalid);
-<span class="cpp_keyword">char</span>* fixed_invalid_sequence = "a????z";
+<span class="keyword">char</span>* fixed_invalid_sequence = <span class=
+"literal">"a????z"</span>;
 assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(), fixed_invalid_sequence));
 </pre>
     <p>
@@ -589,20 +694,25 @@ assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(),
     <p>
       Checks whether a sequence of three octets is a UTF-8 byte order mark (BOM)
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; <span class="cpp_keyword">bool</span> is_bom (octet_iterator
-    it);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+<span class="keyword">bool</span> is_bom (octet_iterator it);
+</pre>
     <p>
       <code>it</code>: beginning of the 3-octet sequence to check<br>
-      <span class="return_value">Return value</span>: <code>true</code> if the sequence is UTF-8 byte order mark;
-      <code>false</code> if not.
+       <span class="return_value">Return value</span>: <code>true</code> if the sequence
+      is UTF-8 byte order mark; <code>false</code> if not.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">unsigned char</span> byte_order_mark[] = {0xef, 0xbb, 0xbf};
-<span class="cpp_keyword">bool</span> bbom = is_bom(byte_order_mark);
-assert (bbom == true);
+<span class="keyword">unsigned char</span> byte_order_mark[] = {<span class=
+"literal">0xef</span>, <span class="literal">0xbb</span>, <span class=
+"literal">0xbf</span>};
+<span class="keyword">bool</span> bbom = is_bom(byte_order_mark);
+assert (bbom == <span class="literal">true</span>);
 </pre>
     <p>
       The typical use of this function is to check the first three bytes of a file. If
@@ -619,23 +729,35 @@ assert (bbom == true);
       Encodes a 32 bit code point as a UTF-8 sequence of octets and appends the sequence
       to a UTF-8 string.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; octet_iterator append(uint32_t cp,
-    octet_iterator result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt;
+octet_iterator append(uint32_t cp, octet_iterator result);
+   
+</pre>
     <p>
       <code>cp</code>: A 32 bit integer representing a code point to append to the
       sequence.<br>
-      <code>result</code>: An output iterator to the place in the sequence where to
+       <code>result</code>: An output iterator to the place in the sequence where to
       append the code point.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the newly appended
-      sequence.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the newly appended sequence.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">unsigned char</span> u[5] = {0,0,0,0,0};
-<span class="cpp_keyword">unsigned char</span>* end = unchecked::append(0x0448, u);
-assert (u[0] == 0xd1 &amp;&amp; u[1] == 0x88 &amp;&amp; u[2] == 0 &amp;&amp; u[3] == 0 &amp;&amp; u[4] == 0);
+<span class="keyword">unsigned char</span> u[<span class="literal">5</span>] = {<span
+class="literal">0</span>,<span class="literal">0</span>,<span class=
+"literal">0</span>,<span class="literal">0</span>,<span class="literal">0</span>};
+<span class="keyword">unsigned char</span>* end = unchecked::append(<span class=
+"literal">0x0448</span>, u);
+assert (u[<span class="literal">0</span>] == <span class=
+"literal">0xd1</span> &amp;&amp; u[<span class="literal">1</span>] == <span class=
+"literal">0x88</span> &amp;&amp; u[<span class="literal">2</span>] == <span class=
+"literal">0</span> &amp;&amp; u[<span class="literal">3</span>] == <span class=
+"literal">0</span> &amp;&amp; u[<span class="literal">4</span>] == <span class=
+"literal">0</span>);
 </pre>
     <p>
       This is a quicker but less safe version of <code>utf8::append</code>. It does not
@@ -649,23 +771,29 @@ assert (u[0] == 0xd1 &amp;&amp; u[1] == 0x88 &amp;&amp; u[2] == 0 &amp;&amp; u[3
       Given the iterator to the beginning of a UTF-8 sequence, it returns the code point
       and moves the iterator to the next position.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; uint32_t next(octet_iterator&amp;
-    it);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt;
+uint32_t next(octet_iterator&amp; it);
+   
+</pre>
     <p>
       <code>it</code>: a reference to an iterator pointing to the beginning of an UTF-8
       encoded code point. After the function returns, it is incremented to point to the
       beginning of the next code point.<br>
-      <span class="return_value">Return value</span>: the 32 bit representation of the processed UTF-8 code point.
+       <span class="return_value">Return value</span>: the 32 bit representation of the
+      processed UTF-8 code point.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-<span class="cpp_keyword">char</span>* w = twochars;
-<span class="cpp_keyword">int</span> cp = unchecked::next(w);
-assert (cp == 0x65e5);
-assert (w == twochars + 3);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">char</span>* w = twochars;
+<span class="keyword">int</span> cp = unchecked::next(w);
+assert (cp == <span class="literal">0x65e5</span>);
+assert (w == twochars + <span class="literal">3</span>);
 </pre>
     <p>
       This is a quicker but less safe version of <code>utf8::next</code>. It does not
@@ -679,22 +807,28 @@ assert (w == twochars + 3);
       decreases the iterator until it hits the beginning of the previous UTF-8 encoded
       code point and returns the 32 bits representation of the code point.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; uint32_t previous(octet_iterator&amp;
-    it);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt;
+uint32_t previous(octet_iterator&amp; it);
+   
+</pre>
     <p>
       <code>it</code>: a reference pointing to an octet within a UTF-8 encoded string.
       After the function returns, it is decremented to point to the beginning of the
       previous code point.<br>
-      <span class="return_value">Return value</span>: the 32 bit representation of the previous code point.
+       <span class="return_value">Return value</span>: the 32 bit representation of the
+      previous code point.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-<span class="cpp_keyword">char</span>* w = twochars + 3;
-<span class="cpp_keyword">int</span> cp = unchecked::previous (w);
-assert (cp == 0x65e5);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">char</span>* w = twochars + <span class="literal">3</span>;
+<span class="keyword">int</span> cp = unchecked::previous (w);
+assert (cp == <span class="literal">0x65e5</span>);
 assert (w == twochars);
 </pre>
     <p>
@@ -708,23 +842,28 @@ assert (w == twochars);
       Advances an iterator by the specified number of code points within an UTF-8
       sequence.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator, typename distance_type&gt; <span class="cpp_keyword">void</span> advance
-    (octet_iterator&amp; it, distance_type n);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator, typename distance_type&gt;
+<span class="keyword">void</span> advance (octet_iterator&amp; it, distance_type n);
+   
+</pre>
     <p>
       <code>it</code>: a reference to an iterator pointing to the beginning of an UTF-8
       encoded code point. After the function returns, it is incremented to point to the
       nth following code point.<br>
-      <code>n</code>: a positive integer that shows how many code points we want to
+       <code>n</code>: a positive integer that shows how many code points we want to
       advance.<br>
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-<span class="cpp_keyword">char</span>* w = twochars;
-unchecked::advance (w, 2);
-assert (w == twochars + 5);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">char</span>* w = twochars;
+unchecked::advance (w, <span class="literal">2</span>);
+assert (w == twochars + <span class="literal">5</span>);
 </pre>
     <p>
       This function works only "forward". In case of a negative <code>n</code>, there is
@@ -741,23 +880,29 @@ assert (w == twochars + 5);
       Given the iterators to two UTF-8 encoded code points in a seqence, returns the
       number of code points between them.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator&gt; <span class="cpp_keyword">typename</span>
-    std::iterator_traits&lt;octet_iterator&gt;::difference_type distance (octet_iterator
-    first, octet_iterator last);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt;
+<span class=
+"keyword">typename</span> std::iterator_traits&lt;octet_iterator&gt;::difference_type distance (octet_iterator first, octet_iterator last);
+</pre>
     <p>
       <code>first</code>: an iterator to a beginning of a UTF-8 encoded code point.<br>
-      <code>last</code>: an iterator to a "post-end" of the last UTF-8 encoded code point
-      in the sequence we are trying to determine the length. It can be the beginning of a
-      new code point, or not.<br>
-      <span class="return_value">Return value</span> the distance between the iterators, in code points.
+       <code>last</code>: an iterator to a "post-end" of the last UTF-8 encoded code
+      point in the sequence we are trying to determine the length. It can be the
+      beginning of a new code point, or not.<br>
+       <span class="return_value">Return value</span> the distance between the iterators,
+      in code points.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-size_t dist = utf8::unchecked::distance(twochars, twochars + 5);
-assert (dist == 2);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+size_t dist = utf8::unchecked::distance(twochars, twochars + <span class=
+"literal">5</span>);
+assert (dist == <span class="literal">2</span>);
 </pre>
     <p>
       This is a quicker but less safe version of <code>utf8::distance</code>. It does not
@@ -769,26 +914,35 @@ assert (dist == 2);
     <p>
       Converts a UTF-16 encoded string to UTF-8.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> u16bit_iterator, <span class="cpp_keyword">typename</span> octet_iterator&gt;
-    octet_iterator utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator
-    result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> u16bit_iterator, <span class=
+"keyword">typename</span> octet_iterator&gt;
+octet_iterator utf16to8 (u16bit_iterator start, u16bit_iterator end, octet_iterator result);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-16 encoded
       string to convert.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-16 encoded string
-      to convert.<br>
-      <code>result</code>: an output iterator to the place in the UTF-8 string where to
-      append the result of conversion. <span class="return_value">Return value</span>: An iterator pointing to the
-      place after the appended UTF-8 string.
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-16 encoded
+      string to convert.<br>
+       <code>result</code>: an output iterator to the place in the UTF-8 string where to
+      append the result of conversion.<br>
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the appended UTF-8 string.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">unsigned short</span> utf16string[] = {0x41, 0x0448, 0x65e5, 0xd834, 0xdd1e};
-vector&lt;<span class="cpp_keyword">unsigned char</span>&gt; utf8result;
-unchecked::utf16to8(utf16string, utf16string + 5, back_inserter(utf8result));
-assert (utf8result.size() == 10);    
+<span class="keyword">unsigned short</span> utf16string[] = {<span class=
+"literal">0x41</span>, <span class="literal">0x0448</span>, <span class=
+"literal">0x65e5</span>, <span class="literal">0xd834</span>, <span class=
+"literal">0xdd1e</span>};
+vector&lt;<span class="keyword">unsigned char</span>&gt; utf8result;
+unchecked::utf16to8(utf16string, utf16string + <span class=
+"literal">5</span>, back_inserter(utf8result));
+assert (utf8result.size() == <span class="literal">10</span>);    
 </pre>
     <p>
       This is a quicker but less safe version of <code>utf8::utf16to8</code>. It does not
@@ -800,28 +954,35 @@ assert (utf8result.size() == 10);
     <p>
       Converts an UTF-8 encoded string to UTF-16
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> u16bit_iterator, typename octet_iterator&gt;
-    u16bit_iterator utf8to16 (octet_iterator start, octet_iterator end, u16bit_iterator
-    result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> u16bit_iterator, typename octet_iterator&gt;
+u16bit_iterator utf8to16 (octet_iterator start, octet_iterator end, u16bit_iterator result);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-8 encoded
       string to convert. &lt; br /&gt; <code>end</code>: an iterator pointing to
       pass-the-end of the UTF-8 encoded string to convert.<br>
-      <code>result</code>: an output iterator to the place in the UTF-16 string where to
+       <code>result</code>: an output iterator to the place in the UTF-16 string where to
       append the result of conversion.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the appended UTF-16
-      string.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the appended UTF-16 string.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span> utf8_with_surrogates[] = "\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e";
-vector &lt;<span class="cpp_keyword">unsigned short</span>&gt; utf16result;
-unchecked::utf8to16(utf8_with_surrogates, utf8_with_surrogates + 9, back_inserter(utf16result));
-assert (utf16result.size() == 4);
-assert (utf16result[2] == 0xd834);
-assert (utf16result[3] == 0xdd1e);
+<span class="keyword">char</span> utf8_with_surrogates[] = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88\xf0\x9d\x84\x9e"</span>;
+vector &lt;<span class="keyword">unsigned short</span>&gt; utf16result;
+unchecked::utf8to16(utf8_with_surrogates, utf8_with_surrogates + <span class=
+"literal">9</span>, back_inserter(utf16result));
+assert (utf16result.size() == <span class="literal">4</span>);
+assert (utf16result[<span class="literal">2</span>] == <span class=
+"literal">0xd834</span>);
+assert (utf16result[<span class="literal">3</span>] == <span class=
+"literal">0xdd1e</span>);
 </pre>
     <p>
       This is a quicker but less safe version of <code>utf8::utf8to16</code>. It does not
@@ -833,27 +994,34 @@ assert (utf16result[3] == 0xdd1e);
     <p>
       Converts a UTF-32 encoded string to UTF-8.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator, <span class="cpp_keyword">typename</span> u32bit_iterator&gt;
-    octet_iterator utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator
-    result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator, <span class=
+"keyword">typename</span> u32bit_iterator&gt;
+octet_iterator utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-32 encoded
       string to convert.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-32 encoded string
-      to convert.<br>
-      <code>result</code>: an output iterator to the place in the UTF-8 string where to
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-32 encoded
+      string to convert.<br>
+       <code>result</code>: an output iterator to the place in the UTF-8 string where to
       append the result of conversion.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the appended UTF-8
-      string.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the appended UTF-8 string.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">int</span> utf32string[] = {0x448, 0x65E5, 0x10346, 0};
-vector&lt;<span class="cpp_keyword">unsigned char</span>&gt; utf8result;
-utf32to8(utf32string, utf32string + 3, back_inserter(utf8result));
-assert (utf8result.size() == 9);
+<span class="keyword">int</span> utf32string[] = {<span class=
+"literal">0x448</span>, <span class="literal">0x65e5</span>, <span class=
+"literal">0x10346</span>, <span class="literal">0</span>};
+vector&lt;<span class="keyword">unsigned char</span>&gt; utf8result;
+utf32to8(utf32string, utf32string + <span class=
+"literal">3</span>, back_inserter(utf8result));
+assert (utf8result.size() == <span class="literal">9</span>);
 </pre>
     <p>
       This is a quicker but less safe version of <code>utf8::utf32to8</code>. It does not
@@ -865,27 +1033,32 @@ assert (utf8result.size() == 9);
     <p>
       Converts a UTF-8 encoded string to UTF-32.
     </p>
-    <code><span class="cpp_keyword">template</span> &lt;<span class="cpp_keyword">typename</span> octet_iterator, typename u32bit_iterator&gt;
-    u32bit_iterator utf8to32 (octet_iterator start, octet_iterator end, u32bit_iterator
-    result);</code> 
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator, typename u32bit_iterator&gt;
+u32bit_iterator utf8to32 (octet_iterator start, octet_iterator end, u32bit_iterator result);
+   
+</pre>
     <p>
       <code>start</code>: an iterator pointing to the beginning of the UTF-8 encoded
       string to convert.<br>
-      <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 encoded string
+       <code>end</code>: an iterator pointing to pass-the-end of the UTF-8 encoded string
       to convert.<br>
-      <code>result</code>: an output iterator to the place in the UTF-32 string where to
+       <code>result</code>: an output iterator to the place in the UTF-32 string where to
       append the result of conversion.<br>
-      <span class="return_value">Return value</span>: An iterator pointing to the place after the appended UTF-32
-      string.
+       <span class="return_value">Return value</span>: An iterator pointing to the place
+      after the appended UTF-32 string.
     </p>
     <p>
       Example of use:
     </p>
 <pre>
-<span class="cpp_keyword">char</span>* twochars = "\xe6\x97\xa5\xd1\x88";
-vector&lt;<span class="cpp_keyword">int</span>&gt; utf32result;
-unchecked::utf8to32(twochars, twochars + 5, back_inserter(utf32result));
-assert (utf32result.size() == 2);
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+vector&lt;<span class="keyword">int</span>&gt; utf32result;
+unchecked::utf8to32(twochars, twochars + <span class=
+"literal">5</span>, back_inserter(utf32result));
+assert (utf32result.size() == <span class="literal">2</span>);
 </pre>
     <p>
       This is a quicker but less safe version of <code>utf8::utf8to32</code>. It does not

@@ -88,11 +88,18 @@ namespace utf8
         }
 
         template <typename octet_iterator>
-        uint32_t previous(octet_iterator& it)
+        uint32_t prior(octet_iterator& it)
         {
             while (internal::is_trail(*(--it))) ;
             octet_iterator temp = it;
             return next(temp);
+        }
+
+        // Deprecated in versions that include prior, but only for the sake of consistency (see utf8::previous)
+        template <typename octet_iterator>
+        inline uint32_t previous(octet_iterator& it)
+        {
+            return prior(it);
         }
 
         template <typename octet_iterator, typename distance_type>
