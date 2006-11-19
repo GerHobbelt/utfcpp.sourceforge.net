@@ -332,7 +332,18 @@ namespace internal
         return cp;        
     }
 
+    template <typename octet_iterator>
+    uint32_t prior(octet_iterator& it, octet_iterator start)
+    {
+        octet_iterator end = it;
+        while (internal::is_trail(*(--it))) 
+            if (it < start)
+                throw invalid_utf8(*it); // error - no lead byte in the sequence
+        octet_iterator temp = it;
+        return next(temp, end);
+    }
 
+    /// Deprecated in versions that include "prior"
     template <typename octet_iterator>
     uint32_t previous(octet_iterator& it, octet_iterator pass_start)
     {

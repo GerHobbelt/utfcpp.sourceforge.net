@@ -80,8 +80,7 @@
       In order to easily handle UTF-8 encoded Unicode strings, I have come up with a set
       of template functions. For anybody used to work with STL algorithms, they should be
       easy and natural to use. The code is freely available for any purpose - check out
-      the license at the beginning of the utf8.h file. Be aware, though, that while I did
-      some testing, this library has not been used in production yet. If you run into
+      the license at the beginning of the utf8.h file. If you run into
       bugs or performance issues, please let me know and I'll do my best to address them.
     </p>
     <p>
@@ -272,7 +271,62 @@ assert (w == twochars + <span class="literal">3</span>);
       thrown.
     </p>
     <h4>
-      utf8::previous
+      utf8::prior
+    </h4>
+    <p>
+      Given a reference to an iterator pointing to an octet in a UTF-8 seqence, it
+      decreases the iterator until it hits the beginning of the previous UTF-8 encoded
+      code point and returns the 32 bits representation of the code point.
+    </p>
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+uint32_t prior(octet_iterator&amp; it, octet_iterator start);
+   
+</pre>
+    <p>
+      <code>it</code>: a reference pointing to an octet within a UTF-8 encoded string.
+      After the function returns, it is decremented to point to the beginning of the
+      previous code point.<br>
+       <code>start</code>: an iterator to the beginning of the sequence where the search
+      for the beginning of a code point is performed. It is a
+      safety measure to prevent passing the beginning of the string in the search for a
+      UTF-8 lead octet.<br>
+       <span class="return_value">Return value</span>: the 32 bit representation of the
+      previous code point.
+    </p>
+    <p>
+      Example of use:
+    </p>
+<pre>
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">unsigned char</span>* w = twochars + <span class=
+"literal">3</span>;
+<span class="keyword">int</span> cp = prior (w, twochars);
+assert (cp == <span class="literal">0x65e5</span>);
+assert (w == twochars);
+</pre>
+    <p> 
+      This function has two purposes: one is two iterate backwards through a UTF-8
+      encoded string. Note that it is usually a better idea to iterate forward instead,
+      since <code>utf8::next</code> is faster. The second purpose is to find a beginning
+      of a UTF-8 sequence if we have a random position within a string.
+    </p> 
+    <p>
+      <code>it</code> will typically point to the beginning of
+      a code point, and <code>start</code> will point to the
+      beginning of the string to ensure we don't go backwards too far. <code>it</code> is
+      decreased until it points to a lead UTF-8 octet, and then the UTF-8 sequence
+      beginning with that octet is decoded to a 32 bit representation and returned.
+    </p>
+    <p>
+      In case <code>pass_end</code> is reached before a UTF-8 lead octet is hit, or if an
+      invalid UTF-8 sequence is started by the lead octet, an <code>invalid_utf8</code>
+      exception is thrown.
+    </p>
+    <h4>
+      utf8::previous (deprecated, see utf8::prior)
     </h4>
     <p>
       Given a reference to an iterator pointing to an octet in a UTF-8 seqence, it
@@ -310,8 +364,14 @@ assert (cp == <span class="literal">0x65e5</span>);
 assert (w == twochars);
 </pre>
     <p>
-      The primary purpose of this function is to iterate backwards through a UTF-8
-      encoded string. Therefore, <code>it</code> will typically point to the beginning of
+      <code>utf8::previous</code> is deprecated, and <code>utf8::prior</code> should
+      be used instead, although the existing code can continue using this function.
+      The problem is the parameter <code>pass_start</code> that points to the position
+      just before the beginning of the sequence. Standard containers don't have the 
+      concept of "pass start" and the function can not be used with their iterators.
+    </p>
+    <p>
+      <code>it</code> will typically point to the beginning of
       a code point, and <code>pass_start</code> will point to the octet just before the
       beginning of the string to ensure we don't go backwards too far. <code>it</code> is
       decreased until it points to a lead UTF-8 octet, and then the UTF-8 sequence
@@ -706,7 +766,7 @@ assert (u[<span class="literal">0</span>] == <span class=
 "literal">0</span>);
 </pre>
     <p>
-      This is a quicker but less safe version of <code>utf8::append</code>. It does not
+      This is a faster but less safe version of <code>utf8::append</code>. It does not
       check for validity of the supplied code point, and may produce an invalid UTF-8
       sequence.
     </p>
@@ -742,11 +802,47 @@ assert (cp == <span class="literal">0x65e5</span>);
 assert (w == twochars + <span class="literal">3</span>);
 </pre>
     <p>
-      This is a quicker but less safe version of <code>utf8::next</code>. It does not
+      This is a faster but less safe version of <code>utf8::next</code>. It does not
       check for validity of the supplied UTF-8 sequence.
     </p>
     <h4>
-      utf8::unchecked::previous
+      utf8::unchecked::prior
+    </h4>
+    <p>
+      Given a reference to an iterator pointing to an octet in a UTF-8 seqence, it
+      decreases the iterator until it hits the beginning of the previous UTF-8 encoded
+      code point and returns the 32 bits representation of the code point.
+    </p>
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt;
+uint32_t prior(octet_iterator&amp; it);
+   
+</pre>
+    <p>
+      <code>it</code>: a reference pointing to an octet within a UTF-8 encoded string.
+      After the function returns, it is decremented to point to the beginning of the
+      previous code point.<br>
+       <span class="return_value">Return value</span>: the 32 bit representation of the
+      previous code point.
+    </p>
+    <p>
+      Example of use:
+    </p>
+<pre>
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">char</span>* w = twochars + <span class="literal">3</span>;
+<span class="keyword">int</span> cp = unchecked::prior (w);
+assert (cp == <span class="literal">0x65e5</span>);
+assert (w == twochars);
+</pre>
+    <p>
+      This is a faster but less safe version of <code>utf8::prior</code>. It does not
+      check for validity of the supplied UTF-8 sequence and offers no boundary checking.
+    </p>
+    <h4>
+      utf8::unchecked::previous (deprecated, see utf8::unchecked::prior)
     </h4>
     <p>
       Given a reference to an iterator pointing to an octet in a UTF-8 seqence, it
@@ -778,7 +874,13 @@ assert (cp == <span class="literal">0x65e5</span>);
 assert (w == twochars);
 </pre>
     <p>
-      This is a quicker but less safe version of <code>utf8::previous</code>. It does not
+     The reason this function is deprecated is just the consistency with the "checked"
+     versions, where <code>prior</code> should be used instead of <code>previous</code>.
+     In fact, <code>unchecked::previous</code> behaves exactly the same as <code>
+     unchecked::prior</code>
+    </p>
+    <p>
+      This is a faster but less safe version of <code>utf8::previous</code>. It does not
       check for validity of the supplied UTF-8 sequence and offers no boundary checking.
     </p>
     <h4>
@@ -816,7 +918,7 @@ assert (w == twochars + <span class="literal">5</span>);
       no effect.
     </p>
     <p>
-      This is a quicker but less safe version of <code>utf8::advance</code>. It does not
+      This is a faster but less safe version of <code>utf8::advance</code>. It does not
       check for validity of the supplied UTF-8 sequence and offers no boundary checking.
     </p>
     <h4>
@@ -851,7 +953,7 @@ size_t dist = utf8::unchecked::distance(twochars, twochars + <span class=
 assert (dist == <span class="literal">2</span>);
 </pre>
     <p>
-      This is a quicker but less safe version of <code>utf8::distance</code>. It does not
+      This is a faster but less safe version of <code>utf8::distance</code>. It does not
       check for validity of the supplied UTF-8 sequence.
     </p>
     <h4>
@@ -891,7 +993,7 @@ unchecked::utf16to8(utf16string, utf16string + <span class=
 assert (utf8result.size() == <span class="literal">10</span>);    
 </pre>
     <p>
-      This is a quicker but less safe version of <code>utf8::utf16to8</code>. It does not
+      This is a faster but less safe version of <code>utf8::utf16to8</code>. It does not
       check for validity of the supplied UTF-16 sequence.
     </p>
     <h4>
@@ -931,7 +1033,7 @@ assert (utf16result[<span class="literal">3</span>] == <span class=
 "literal">0xdd1e</span>);
 </pre>
     <p>
-      This is a quicker but less safe version of <code>utf8::utf8to16</code>. It does not
+      This is a faster but less safe version of <code>utf8::utf8to16</code>. It does not
       check for validity of the supplied UTF-8 sequence.
     </p>
     <h4>
@@ -970,7 +1072,7 @@ utf32to8(utf32string, utf32string + <span class=
 assert (utf8result.size() == <span class="literal">9</span>);
 </pre>
     <p>
-      This is a quicker but less safe version of <code>utf8::utf32to8</code>. It does not
+      This is a faster but less safe version of <code>utf8::utf32to8</code>. It does not
       check for validity of the supplied UTF-32 sequence.
     </p>
     <h4>
@@ -1007,7 +1109,7 @@ unchecked::utf8to32(twochars, twochars + <span class=
 assert (utf32result.size() == <span class="literal">2</span>);
 </pre>
     <p>
-      This is a quicker but less safe version of <code>utf8::utf8to32</code>. It does not
+      This is a faster but less safe version of <code>utf8::utf8to32</code>. It does not
       check for validity of the supplied UTF-8 sequence.
     </p>
     <h2 id="points">

@@ -42,8 +42,24 @@ int main()
     assert (cp == 0x0448);
     assert (w == threechars + 9);
 
+    //prior
+    w = twochars + 3;
+    cp = prior (w, twochars);
+    assert (cp == 0x65e5);
+    assert (w == twochars);
 
-    //previous
+    w = threechars + 9;
+    cp = prior(w, threechars);
+    assert (cp == 0x0448);
+    assert (w == threechars + 7);
+    cp = prior(w, threechars);
+    assert (cp == 0x65e5);
+    assert (w == threechars + 4);
+    cp = prior(w, threechars);
+    assert (cp == 0x10346);
+    assert (w == threechars); 
+
+    //previous (deprecated)
     w = twochars + 3;
     cp = previous (w, twochars - 1);
     assert (cp == 0x65e5);
@@ -155,7 +171,7 @@ int main()
     assert (w == threechars + 9);
 
 
-    //previous
+    //previous (calls prior internally)
     w = twochars + 3;
     cp = unchecked::previous (w);
     assert (cp == 0x65e5);
