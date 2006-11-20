@@ -1,10 +1,10 @@
 utf8 cpp library
-Release 1.01 
+Release 1.02 
 
-This is a bug-fix release.
+utf8::previous is deprecated in favor of utf8::prior
 
 Bug Fixes: 
-[1583547] exception::what is a const member function
+[ 1599048 ] utf8::previous doesn't play well with Standard containers
 
 
 Files: utf8.h utf8cpp.html ReleaseNotes
