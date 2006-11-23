@@ -257,6 +257,22 @@ int main()
     // try it with the return value;
     utf16_end = utf8to16 (utf8_with_surrogates, utf8_with_surrogates + 9, &utf16result[0]);
     assert (utf16_end == &utf16result[0] + 4);
+    
+    // iterator
+    utf8::unchecked::iterator<char*> un_it(threechars);
+    utf8::unchecked::iterator<char*> un_it2 = un_it;
+    assert (un_it2 == un_it);
+    assert (*un_it == 0x10346);
+    assert (*(++un_it) == 0x65e5);
+    assert ((*un_it++) == 0x65e5);
+    assert (*un_it == 0x0448);
+    utf8::unchecked::iterator<char*> un_endit (threechars + 9);  
+    assert (++un_it == un_endit);
+    assert (*(--un_it) == 0x0448);
+    assert ((*un_it--) == 0x0448);
+    assert (*un_it == 0x65e5);
+    assert (--un_it == utf8::unchecked::iterator<char*>(threechars));
+    assert (*un_it == 0x10346);
 }
 
 

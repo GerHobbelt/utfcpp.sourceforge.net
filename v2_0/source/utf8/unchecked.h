@@ -167,6 +167,48 @@ namespace utf8
             return result;
         }
 
+        // The iterator class
+        template <typename octet_iterator>
+          class iterator : public std::iterator <std::bidirectional_iterator_tag, uint32_t> { 
+            octet_iterator it;
+            public:
+            iterator () {};
+            explicit iterator (const octet_iterator& octet_it): it(octet_it) {}
+            // the default "big three" are OK
+            octet_iterator base () const { return it; }
+            uint32_t operator * () const
+            {
+              octet_iterator temp = it;
+              return next(temp);
+            }
+            bool operator == (const iterator& rhs) const 
+            { 
+              return (it == rhs.it);
+            }
+            iterator& operator ++ () 
+            {
+              next(it);
+              return *this;
+            }
+            iterator operator ++ (int)
+            {
+              iterator temp = *this;
+              next(it);
+              return temp;
+            }  
+            iterator& operator -- ()
+            {
+              prior(it);
+              return *this;
+            }
+            iterator operator -- (int)
+            {
+              iterator temp = *this;
+              prior(it);
+              return temp;
+            }
+          }; // class iterator
+
     } // namespace utf8::unchecked
 } // namespace utf8 
 

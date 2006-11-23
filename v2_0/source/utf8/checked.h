@@ -250,11 +250,12 @@ namespace utf8
 
     // The iterator class
     template <typename octet_iterator>
-    class iterator { 
+    class iterator : public std::iterator <std::bidirectional_iterator_tag, uint32_t> { 
       octet_iterator it;
       octet_iterator range_start;
       octet_iterator range_end;
       public:
+      iterator () {};
       explicit iterator (const octet_iterator& octet_it, 
                          const octet_iterator& range_start,
                          const octet_iterator& range_end) :
@@ -264,6 +265,7 @@ namespace utf8
             throw std::out_of_range("Invalid utf-8 iterator position");
       }
       // the default "big three" are OK
+      octet_iterator base () const { return it; }
       uint32_t operator * () const
       {
           octet_iterator temp = it;
