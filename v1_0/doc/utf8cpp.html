@@ -133,7 +133,7 @@
     }
     <span class="comment">// Play with all the lines in the file</span>
     <span class="keyword">do</span> {
-        // check for invalid utf-8 (for a simple yes/no check, there is also utf8::is_valid function)
+       <span class="comment">// check for invalid utf-8 (for a simple yes/no check, there is also utf8::is_valid function)</span>
         string::iterator end_it = utf8::find_invalid(line.begin(), line.end());
         <span class="keyword">if</span> (end_it != line.end()) {
             cout &lt;&lt; <span class=
