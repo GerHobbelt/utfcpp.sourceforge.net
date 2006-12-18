@@ -156,6 +156,7 @@ int main()
     assert (*(++it) == 0x65e5);
     assert ((*it++) == 0x65e5);
     assert (*it == 0x0448);
+    assert (it != it2);
     utf8::iterator<char*> endit (threechars + 9, threechars, threechars + 9);  
     assert (++it == endit);
     assert (*(--it) == 0x0448);
@@ -265,6 +266,7 @@ int main()
     assert (*un_it == 0x10346);
     assert (*(++un_it) == 0x65e5);
     assert ((*un_it++) == 0x65e5);
+    assert (un_it != un_it2);
     assert (*un_it == 0x0448);
     utf8::unchecked::iterator<char*> un_endit (threechars + 9);  
     assert (++un_it == un_endit);

@@ -80,6 +80,18 @@ int main(int argc, char** argv)
         if (char_count != 0)
             cout << "Line " << line_count << ": Error in iterating with previous - wrong number of characters" << '\n';
 
+        // Try utf8::iterator
+        utf8::iterator<string::iterator> u8it(line_start, line_start, line_end);
+        if (!utf32_line.empty() && *u8it != utf32_line.at(0))
+          cout << "Line " << line_count << ": Error in utf::iterator * operator" << '\n'; 
+        if (std::distance(u8it, utf8::iterator<string::iterator>(line_end, line_start, line_end)) != static_cast<int>(utf32_line.size()))
+          cout << "Line " << line_count << ": Error in using utf::iterator with std::distance - wrong number of characters" << '\n';
+
+        std::advance(u8it, utf32_line.size());
+        if (u8it != utf8::iterator<string::iterator>(line_end, line_start, line_end))
+          cout << "Line " << line_count << ": Error in using utf::iterator with std::advance" << '\n';
+
+
         //======================== Now, the unchecked versions ======================
         // Convert it to utf-16 and compare to the checked version
         vector<unsigned short> utf16_line_unchecked;
@@ -130,5 +142,15 @@ int main(int argc, char** argv)
         if (char_count != 0)
             cout << "Line " << line_count << ": Error in iterating with unchecked::previous - wrong number of characters" << '\n';
 
+        // Try utf8::unchecked::iterator
+        utf8::unchecked::iterator<string::iterator> un_u8it(line_start);
+        if (!utf32_line.empty() && *un_u8it != utf32_line.at(0))
+          cout << "Line " << line_count << ": Error in utf::unchecked::iterator * operator" << '\n'; 
+        if (std::distance(un_u8it, utf8::unchecked::iterator<string::iterator>(line_end)) != static_cast<int>(utf32_line.size()))
+          cout << "Line " << line_count << ": Error in using utf::unchecked::iterator with std::distance - wrong number of characters" << '\n';
+
+        std::advance(un_u8it, utf32_line.size());
+        if (un_u8it != utf8::unchecked::iterator<string::iterator>(line_end))
+          cout << "Line " << line_count << ": Error in using utf::unchecked::iterator with std::advance" << '\n';
     }
 }
