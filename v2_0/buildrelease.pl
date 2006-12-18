@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-$release_files = 'source/utf8.h doc/utf8cpp.html doc/ReleaseNotes';
+$release_files = 'source/utf8.h  source/utf8/core.h source/utf8/checked.h source/utf8/unchecked.h doc/utf8cpp.html doc/ReleaseNotes';
 
 # First get the latest version
 `svn update`;
