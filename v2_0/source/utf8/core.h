@@ -123,7 +123,7 @@ namespace internal
         }
 
         // Do we have enough memory?     
-        if (end - it < length)
+        if (std::distance(it, end) < length)
             return NOT_ENOUGH_ROOM;
         
         // Check trail octets and calculate the code point
@@ -147,7 +147,7 @@ namespace internal
                         cp += (*it) & 0x3f;
                     }
                     else {
-                        --it; --it; 
+                        std::advance(it, -2);
                         return INCOMPLETE_SEQUENCE;
                     }
                 }
@@ -165,12 +165,12 @@ namespace internal
                             cp += (*it) & 0x3f; 
                         }
                         else {
-                            --it; --it; --it;
+                            std::advance(it, -3);
                             return INCOMPLETE_SEQUENCE;
                         }
                     }
                     else {
-                        --it; --it;
+                        std::advance(it, -2);
                         return INCOMPLETE_SEQUENCE;
                     }
                 }
@@ -192,22 +192,19 @@ namespace internal
             
         if (cp < 0x80) {
             if (length != 1) {
-                for (octet_difference_type i = 0; i < length - 1; ++i)
-                    --it;
+                std::advance(it, -(length-1));
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x800) {
             if (length != 2) {
-                for (octet_difference_type i = 0; i < length - 1; ++i)
-                    --it;
+                std::advance(it, -(length-1));
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x10000) {
             if (length != 3) {
-                for (octet_difference_type i = 0; i < length - 1; ++i)
-                    --it;
+                std::advance(it, -(length-1));
                 return OVERLONG_SEQUENCE;
             }
         }

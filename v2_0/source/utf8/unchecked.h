@@ -178,34 +178,38 @@ namespace utf8
             octet_iterator base () const { return it; }
             uint32_t operator * () const
             {
-              octet_iterator temp = it;
-              return next(temp);
+                octet_iterator temp = it;
+                return next(temp);
             }
             bool operator == (const iterator& rhs) const 
             { 
-              return (it == rhs.it);
+                return (it == rhs.it);
+            }
+            bool operator != (const iterator& rhs) const
+            {
+                return !(operator == (rhs));
             }
             iterator& operator ++ () 
             {
-              next(it);
-              return *this;
+                std::advance(it, internal::sequence_length(it));
+                return *this;
             }
             iterator operator ++ (int)
             {
-              iterator temp = *this;
-              next(it);
-              return temp;
+                iterator temp = *this;
+                std::advance(it, internal::sequence_length(it));
+                return temp;
             }  
             iterator& operator -- ()
             {
-              prior(it);
-              return *this;
+                prior(it);
+                return *this;
             }
             iterator operator -- (int)
             {
-              iterator temp = *this;
-              prior(it);
-              return temp;
+                iterator temp = *this;
+                prior(it);
+                return temp;
             }
           }; // class iterator
 

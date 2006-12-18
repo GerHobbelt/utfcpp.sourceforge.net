@@ -277,6 +277,10 @@ namespace utf8
               throw std::logic_error("Comparing utf-8 iterators defined with different ranges");
           return (it == rhs.it);
       }
+      bool operator != (const iterator& rhs) const
+      {
+          return !(operator == (rhs));
+      }
       iterator& operator ++ () 
       {
           next(it, range_end);
