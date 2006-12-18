@@ -37,6 +37,9 @@
         </style>
   </head>
   <body>
+    <h1>
+      UTF8-CPP: UTF-8 with C++ in a Portable Way
+    </h1>
     <p>
       <a href="https://sourceforge.net/projects/utfcpp">The Sourceforge project page</a>
     </p>
@@ -77,8 +80,8 @@
       solutions.
     </p>
     <p>
-      In order to easily handle UTF-8 encoded Unicode strings, I have come up with a set
-      of template functions. For anybody used to work with STL algorithms, they should be
+      In order to easily handle UTF-8 encoded Unicode strings, I have come up with a small
+      generic library. For anybody used to work with STL algorithms and iterators, it should be
       easy and natural to use. The code is freely available for any purpose - check out
       the license at the beginning of the utf8.h file. If you run into
       bugs or performance issues, please let me know and I'll do my best to address them.
@@ -105,6 +108,7 @@
 <span class="preprocessor">#include &lt;iostream&gt;</span>
 <span class="preprocessor">#include &lt;string&gt;</span>
 <span class="preprocessor">#include &lt;vector&gt;</span>
+<span class="preprocessor">#include "utf8.h"</span>
 <span class="keyword">using namespace</span> std;
 <span class="keyword">int</span> main()
 {
@@ -780,6 +784,85 @@ assert (bbom == <span class="literal">true</span>);
       encoded text.
     </p>
     <h3>
+      Types From utf8 Namespace
+    </h3>
+    <h4>
+      utf8::iterator
+    </h4>
+    <p>
+      Adapts the underlying octet iterator to iterate over the sequence of code points,
+      rather than raw octets.
+    </p>
+<pre>
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> octet_iterator&gt;
+<span class="keyword">class</span> iterator;
+</pre>
+    
+    <h5>Member functions</h5>
+      <dl>
+      <dt><code>iterator();</code> <dd> the deafult constructor; the underlying <code>octet_iterator</code> is
+      constructed with its default constructor.
+      <dt><code><span class="keyword">explicit</span> iterator (const octet_iterator&amp; octet_it, 
+                         const octet_iterator&amp; range_start,
+                         const octet_iterator&amp; range_end);</code> <dd> a constructor 
+      that initializes the underlying <code>octet_iterator</code> with <code>octet_it</code>
+      and sets the range in which the iterator is considered valid.
+      <dt><code>octet_iterator base () <span class="keyword">const</span>;</code> <dd> returns the 
+      underlying <code>octet_iterator</code>.
+      <dt><code>uint32_t operator * () <span class="keyword">const</span>;</code> <dd> decodes the utf-8 sequence
+      the underlying <code>octet_iterator</code> is pointing to and returns the code point.
+      <dt><code><span class="keyword">bool operator</span> == (const iterator&amp; rhs)
+      <span class="keyword">const</span>;</code> <dd> returns <span class="keyword">true</span>
+      if the two underlaying iterators are equal.
+      <dt><code><span class="keyword">bool operator</span> != (const iterator&amp; rhs)
+      <span class="keyword">const</span>;</code> <dd> returns <span class="keyword">true</span>
+      if the two underlaying iterators are not equal.
+      <dt><code>iterator&amp; <span class="keyword">operator</span> ++ (); </code> <dd> the prefix increment - moves
+      the iterator to the next UTF-8 encoded code point.
+      <dt><code>iterator <span class="keyword">operator</span> ++ (<span class="keyword">int</span>); </code> <dd>
+      the postfix increment - moves the iterator to the next UTF-8 encoded code point and returns the current one.
+      <dt><code>iterator&amp; <span class="keyword">operator</span> -- (); </code> <dd> the prefix decrement - moves
+      the iterator to the previous UTF-8 encoded code point.
+      <dt><code>iterator <span class="keyword">operator</span> -- (<span class="keyword">int</span>); </code> <dd>
+      the postfix decrement - moves the iterator to the previous UTF-8 encoded code point and returns the current one.
+      </dl>
+      <p>
+      Example of use:
+      </p>
+<pre>
+<span class="keyword">char</span>* threechars = <span class="literal">"\xf0\x90\x8d\x86\xe6\x97\xa5\xd1\x88"</span>;
+utf8::iterator&lt;<span class="keyword">char</span>*&gt; it(threechars, threechars, threechars + <span class="literal">9</span>);
+utf8::iterator&lt;<span class="keyword">char</span>*&gt; it2 = it;
+assert (it2 == it);
+assert (*it == <span class="literal">0x10346</span>);
+assert (*(++it) == <span class="literal">0x65e5</span>);
+assert ((*it++) == <span class="literal">0x65e5</span>);
+assert (*it == <span class="literal">0x0448</span>);
+assert (it != it2);
+utf8::iterator&lt;<span class="keyword">char</span>*&gt; endit (threechars + <span class="literal">9</span>, threechars, threechars + <span class="literal">9</span>);  
+assert (++it == endit);
+assert (*(--it) == <span class="literal">0x0448</span>);
+assert ((*it--) == <span class="literal">0x0448</span>);
+assert (*it == <span class="literal">0x65e5</span>);
+assert (--it == utf8::iterator&lt;<span class="keyword">char</span>*&gt;(threechars, threechars, threechars + <span class="literal">9</span>));
+assert (*it == <span class="literal">0x10346</span>);
+</pre>
+      <p>
+      The purpose of <code>utf8::iterator</code> adapter is to enable easy iteration as well as the use of STL
+      algorithms with UTF-8 encoded strings. Increment and decrement operators are implemented in terms of 
+      <code>utf8::next()</code> and <code>utf8::prior()</code> functions. 
+      </p>
+      <p>
+      Note that <code>utf8::iterator</code> adapter is a checked iterator. It operates on the range specified in
+      the constructor; any attempt to go out of that range will result in an exception. Even the comparison operators
+      require both iterator object to be constructed against the same range - otherwise an exception is thrown. Typically,
+      the range will be determined by sequence container functions <code>begin</code> and <code>end</code>, i.e.:
+      </p>
+<pre>
+std::string s = <span class="literal">"example"</span>;
+utf8::iterator i (s.begin(), s.begin(), s.end());
+</pre>
+    <h3>
       Functions From utf8::unchecked Namespace
     </h3>
     <h4>
@@ -1166,6 +1249,72 @@ assert (utf32result.size() == <span class="literal">2</span>);
       This is a faster but less safe version of <code>utf8::utf8to32</code>. It does not
       check for validity of the supplied UTF-8 sequence.
     </p>
+    <h3>
+      Types From utf8::unchecked Namespace
+    </h3>
+    <h4>
+      utf8::iterator
+    </h4>
+    <p>
+      Adapts the underlying octet iterator to iterate over the sequence of code points,
+      rather than raw octets.
+    </p>
+<pre>
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> octet_iterator&gt;
+<span class="keyword">class</span> iterator;
+</pre>
+    
+    <h5>Member functions</h5>
+      <dl>
+      <dt><code>iterator();</code> <dd> the deafult constructor; the underlying <code>octet_iterator</code> is
+      constructed with its default constructor.
+      <dt><code><span class="keyword">explicit</span> iterator (const octet_iterator&amp; octet_it); 
+                         </code> <dd> a constructor 
+      that initializes the underlying <code>octet_iterator</code> with <code>octet_it</code>
+      <dt><code>octet_iterator base () <span class="keyword">const</span>;</code> <dd> returns the 
+      underlying <code>octet_iterator</code>.
+      <dt><code>uint32_t operator * () <span class="keyword">const</span>;</code> <dd> decodes the utf-8 sequence
+      the underlying <code>octet_iterator</code> is pointing to and returns the code point.
+      <dt><code><span class="keyword">bool operator</span> == (const iterator&amp; rhs)
+      <span class="keyword">const</span>;</code> <dd> returns <span class="keyword">true</span>
+      if the two underlaying iterators are equal.
+      <dt><code><span class="keyword">bool operator</span> != (const iterator&amp; rhs)
+      <span class="keyword">const</span>;</code> <dd> returns <span class="keyword">true</span>
+      if the two underlaying iterators are not equal.
+      <dt><code>iterator&amp; <span class="keyword">operator</span> ++ (); </code> <dd> the prefix increment - moves
+      the iterator to the next UTF-8 encoded code point.
+      <dt><code>iterator <span class="keyword">operator</span> ++ (<span class="keyword">int</span>); </code> <dd>
+      the postfix increment - moves the iterator to the next UTF-8 encoded code point and returns the current one.
+      <dt><code>iterator&amp; <span class="keyword">operator</span> -- (); </code> <dd> the prefix decrement - moves
+      the iterator to the previous UTF-8 encoded code point.
+      <dt><code>iterator <span class="keyword">operator</span> -- (<span class="keyword">int</span>); </code> <dd>
+      the postfix decrement - moves the iterator to the previous UTF-8 encoded code point and returns the current one.
+      </dl>
+      <p>
+      Example of use:
+      </p>
+<pre>
+<span class="keyword">char</span>* threechars = <span class="literal">"\xf0\x90\x8d\x86\xe6\x97\xa5\xd1\x88"</span>;
+utf8::unchecked::iterator&lt;<span class="keyword">char</span>*&gt; un_it(threechars);
+utf8::unchecked::iterator&lt;<span class="keyword">char</span>*&gt; un_it2 = un_it;
+assert (un_it2 == un_it);
+assert (*un_it == <span class="literal">0x10346</span>);
+assert (*(++un_it) == <span class="literal">0x65e5</span>);
+assert ((*un_it++) == <span class="literal">0x65e5</span>);
+assert (*un_it == <span class="literal">0x0448</span>);
+assert (un_it != un_it2);
+utf8::::unchecked::iterator&lt;<span class="keyword">char</span>*&gt; un_endit (threechars + <span class="literal">9</span>);  
+assert (++un_it == un_endit);
+assert (*(--un_it) == <span class="literal">0x0448</span>);
+assert ((*un_it--) == <span class="literal">0x0448</span>);
+assert (*un_it == <span class="literal">0x65e5</span>);
+assert (--un_it == utf8::unchecked::iterator&lt;<span class="keyword">char</span>*&gt;(threechars));
+assert (*un_it == <span class="literal">0x10346</span>);
+</pre>
+      <p>
+      This is an unchecked version of <code>utf8::iterator</code>. It is faster in many cases, but offers
+      no validity or range checks.
+      </p>
     <h2 id="points">
       Points of interest
     </h2>
