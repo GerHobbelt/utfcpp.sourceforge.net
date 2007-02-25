@@ -34,6 +34,12 @@ int main()
 	   const unsigned* u = find(INVALID_LINES, INVALID_LINES_END, line_count);
 	   if (u == INVALID_LINES_END) 
 	       cout << "Unexpected invalid utf-8 at line " << line_count << '\n';
+
+           // try fixing it:
+           string fixed_line;
+           replace_invalid(line.begin(), line.end(), back_inserter(fixed_line));
+           if (!is_valid(fixed_line.begin(), fixed_line.end()))
+               cout << "replace_invalid() resulted in an invalid utf-8 at line " << line_count << '\n';
         }
     }
 }

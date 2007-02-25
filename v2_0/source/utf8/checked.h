@@ -262,7 +262,7 @@ namespace utf8
                it(octet_it), range_start(range_start), range_end(range_end)
       {
           if (it < range_start || it > range_end)
-            throw std::out_of_range("Invalid utf-8 iterator position");
+              throw std::out_of_range("Invalid utf-8 iterator position");
       }
       // the default "big three" are OK
       octet_iterator base () const { return it; }
@@ -273,7 +273,7 @@ namespace utf8
       }
       bool operator == (const iterator& rhs) const 
       { 
-          if (range_start != rhs.range_start && range_end != rhs.range_end)
+          if (range_start != rhs.range_start || range_end != rhs.range_end)
               throw std::logic_error("Comparing utf-8 iterators defined with different ranges");
           return (it == rhs.it);
       }

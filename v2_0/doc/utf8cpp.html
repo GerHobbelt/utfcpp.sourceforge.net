@@ -33,6 +33,10 @@
     ul.toc {
       list-style-type: none;
     }
+    p.version {
+      font-size: small;
+      font-style: italic;
+    }
     -->
         </style>
   </head>
@@ -56,6 +60,20 @@
         </li>
         <li>
           <a href="#reference">Reference</a>
+          <ul class="toc">
+            <li>
+              <a href="#funutf8">Functions From utf8 Namespace </a>
+            </li>
+            <li>
+              <a href="#typesutf8">Types From utf8 Namespace </a>
+            </li>
+            <li>
+              <a href="#fununchecked">Functions From utf8::unchecked Namespace </a>
+            </li>
+            <li>
+              <a href="#typesunchecked">Types From utf8::unchecked Namespace </a>
+            </li>
+          </ul>
         </li>
         <li>
           <a href="#points">Points of Interest</a>
@@ -64,7 +82,7 @@
           <a href="#conclusion">Conclusion</a>
         </li>
         <li>
-          <a href="#references">References</a>
+          <a href="#links">Links</a>
         </li>
       </ul>
     </div>
@@ -182,12 +200,15 @@
     <h2 id="reference">
       Reference
     </h2>
-    <h3>
+    <h3 id="funutf8">
       Functions From utf8 Namespace
     </h3>
     <h4>
       utf8::append
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Encodes a 32 bit code point as a UTF-8 sequence of octets and appends the sequence
       to a UTF-8 string.
@@ -236,6 +257,9 @@ assert (u[<span class="literal">0</span>] == <span class=
     <h4>
       utf8::next
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Given the iterator to the beginning of the UTF-8 sequence, it returns the code
       point and moves the iterator to the next position.
@@ -277,6 +301,9 @@ assert (w == twochars + <span class="literal">3</span>);
     <h4>
       utf8::prior
     </h4>
+    <p class="version">
+    Available in version 1.02 and later.
+    </p>
     <p>
       Given a reference to an iterator pointing to an octet in a UTF-8 seqence, it
       decreases the iterator until it hits the beginning of the previous UTF-8 encoded
@@ -330,8 +357,11 @@ assert (w == twochars);
       exception is thrown.
     </p>
     <h4>
-      utf8::previous (deprecated, see utf8::prior)
+      utf8::previous
     </h4>
+    <p class="version">
+    Deprecated in version 1.02 and later.
+    </p>
     <p>
       Given a reference to an iterator pointing to an octet in a UTF-8 seqence, it
       decreases the iterator until it hits the beginning of the previous UTF-8 encoded
@@ -389,6 +419,9 @@ assert (w == twochars);
     <h4>
       utf8::advance
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Advances an iterator by the specified number of code points within an UTF-8
       sequence.
@@ -431,6 +464,9 @@ assert (w == twochars + <span class="literal">5</span>);
     <h4>
       utf8::distance
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Given the iterators to two UTF-8 encoded code points in a seqence, returns the
       number of code points between them.
@@ -474,6 +510,9 @@ assert (dist == <span class="literal">2</span>);
     <h4>
       utf8::utf16to8
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Converts a UTF-16 encoded string to UTF-8.
     </p>
@@ -514,6 +553,9 @@ assert (utf8result.size() == <span class="literal">10</span>);
     <h4>
       utf8::utf8to16
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Converts an UTF-8 encoded string to UTF-16
     </p>
@@ -555,6 +597,9 @@ assert (utf16result[<span class="literal">3</span>] == <span class=
     <h4>
       utf8::utf32to8
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Converts a UTF-32 encoded string to UTF-8.
     </p>
@@ -593,6 +638,9 @@ assert (utf8result.size() == <span class="literal">9</span>);
     <h4>
       utf8::utf8to32
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Converts a UTF-8 encoded string to UTF-32.
     </p>
@@ -632,6 +680,9 @@ assert (utf32result.size() == <span class="literal">2</span>);
     <h4>
       utf8::find_invalid
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Detects an invalid sequence within a UTF-8 string.
     </p>
@@ -668,6 +719,9 @@ assert (invalid == utf_invalid + <span class="literal">5</span>);
     <h4>
       utf8::is_valid
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Checks whether a sequence of octets is a valid UTF-8 string.
     </p>
@@ -701,6 +755,9 @@ assert (bvalid == false);
     <h4>
       utf8::replace_invalid
     </h4>
+    <p class="version">
+    Available in version 2.0 and later.
+    </p>
     <p>
       Replaces all invalid UTF-8 sequences within a string with a replacement marker.
     </p>
@@ -755,6 +812,9 @@ assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(),
     <h4>
       utf8::is_bom
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Checks whether a sequence of three octets is a UTF-8 byte order mark (BOM)
     </p>
@@ -783,12 +843,15 @@ assert (bbom == <span class="literal">true</span>);
       they form the UTF-8 BOM, we want to skip them before processing the actual UTF-8
       encoded text.
     </p>
-    <h3>
+    <h3 id="typesutf8">
       Types From utf8 Namespace
     </h3>
     <h4>
       utf8::iterator
     </h4>
+    <p class="version">
+    Available in version 2.0 and later.
+    </p>
     <p>
       Adapts the underlying octet iterator to iterate over the sequence of code points,
       rather than raw octets.
@@ -862,12 +925,15 @@ assert (*it == <span class="literal">0x10346</span>);
 std::string s = <span class="literal">"example"</span>;
 utf8::iterator i (s.begin(), s.begin(), s.end());
 </pre>
-    <h3>
+    <h3 id="fununchecked">
       Functions From utf8::unchecked Namespace
     </h3>
     <h4>
       utf8::unchecked::append
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Encodes a 32 bit code point as a UTF-8 sequence of octets and appends the sequence
       to a UTF-8 string.
@@ -910,6 +976,9 @@ assert (u[<span class="literal">0</span>] == <span class=
     <h4>
       utf8::unchecked::next
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Given the iterator to the beginning of a UTF-8 sequence, it returns the code point
       and moves the iterator to the next position.
@@ -945,6 +1014,9 @@ assert (w == twochars + <span class="literal">3</span>);
     <h4>
       utf8::unchecked::prior
     </h4>
+    <p class="version">
+    Available in version 1.02 and later.
+    </p>
     <p>
       Given a reference to an iterator pointing to an octet in a UTF-8 seqence, it
       decreases the iterator until it hits the beginning of the previous UTF-8 encoded
@@ -981,6 +1053,9 @@ assert (w == twochars);
     <h4>
       utf8::unchecked::previous (deprecated, see utf8::unchecked::prior)
     </h4>
+    <p class="version">
+    Deprecated in version 1.02 and later.
+    </p>
     <p>
       Given a reference to an iterator pointing to an octet in a UTF-8 seqence, it
       decreases the iterator until it hits the beginning of the previous UTF-8 encoded
@@ -1023,6 +1098,9 @@ assert (w == twochars);
     <h4>
       utf8::unchecked::advance
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Advances an iterator by the specified number of code points within an UTF-8
       sequence.
@@ -1061,6 +1139,9 @@ assert (w == twochars + <span class="literal">5</span>);
     <h4>
       utf8::unchecked::distance
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Given the iterators to two UTF-8 encoded code points in a seqence, returns the
       number of code points between them.
@@ -1096,6 +1177,9 @@ assert (dist == <span class="literal">2</span>);
     <h4>
       utf8::unchecked::utf16to8
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Converts a UTF-16 encoded string to UTF-8.
     </p>
@@ -1136,6 +1220,9 @@ assert (utf8result.size() == <span class="literal">10</span>);
     <h4>
       utf8::unchecked::utf8to16
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Converts an UTF-8 encoded string to UTF-16
     </p>
@@ -1176,6 +1263,9 @@ assert (utf16result[<span class="literal">3</span>] == <span class=
     <h4>
       utf8::unchecked::utf32to8
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Converts a UTF-32 encoded string to UTF-8.
     </p>
@@ -1215,6 +1305,9 @@ assert (utf8result.size() == <span class="literal">9</span>);
     <h4>
       utf8::unchecked::utf8to32
     </h4>
+    <p class="version">
+    Available in version 1.0 and later.
+    </p>
     <p>
       Converts a UTF-8 encoded string to UTF-32.
     </p>
@@ -1249,12 +1342,15 @@ assert (utf32result.size() == <span class="literal">2</span>);
       This is a faster but less safe version of <code>utf8::utf8to32</code>. It does not
       check for validity of the supplied UTF-8 sequence.
     </p>
-    <h3>
+    <h3 id="typesunchecked">
       Types From utf8::unchecked Namespace
     </h3>
     <h4>
       utf8::iterator
     </h4>
+    <p class="version">
+    Available in version 2.0 and later.
+    </p>
     <p>
       Adapts the underlying octet iterator to iterate over the sequence of code points,
       rather than raw octets.
@@ -1380,8 +1476,8 @@ assert (*un_it == <span class="literal">0x10346</span>);
       use other means to work with UTF-8 strings. Template functions I describe in this
       article may be a good step in this direction.
     </p>
-    <h2 id="references">
-      References
+    <h2 id="links">
+      Links
     </h2>
     <ol>
       <li>
