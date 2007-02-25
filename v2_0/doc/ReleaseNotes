@@ -1,7 +1,12 @@
 utf8 cpp library
-Release 2.0 Beta 1
+Release 2.0
 
-This is the first Beta release of the version 2.0 of the library. Please note that the branch 1.x is still being developed, and will be maintained even after 2.x becomes stable.
+This is the first production release of the version 2.0 of the library. Please note that the branch 1.x is still being developed, and will be maintained in the future.
+
+Changes from version 2.o Beta 1:
+- A minor fix in the utf::iterator
+- Updated documentation
+
 
 Changes from version 1.02:
 
