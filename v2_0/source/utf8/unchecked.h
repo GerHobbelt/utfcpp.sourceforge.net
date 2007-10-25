@@ -56,6 +56,7 @@ namespace utf8
             }
             return result;
         }
+
         template <typename octet_iterator>
         uint32_t next(octet_iterator& it)
         {
@@ -85,6 +86,12 @@ namespace utf8
             }
             ++it;
             return cp;        
+        }
+
+        template <typename octet_iterator>
+        uint32_t peek_next(octet_iterator it)
+        {
+            return next(it);    
         }
 
         template <typename octet_iterator>

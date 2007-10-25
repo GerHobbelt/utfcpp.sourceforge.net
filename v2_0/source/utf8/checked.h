@@ -153,6 +153,12 @@ namespace utf8
     }
 
     template <typename octet_iterator>
+    uint32_t peek_next(octet_iterator it, octet_iterator end)
+    {
+        return next(it, end);
+    }
+
+    template <typename octet_iterator>
     uint32_t prior(octet_iterator& it, octet_iterator start)
     {
         octet_iterator end = it;

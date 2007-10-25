@@ -22,7 +22,6 @@ int main()
     end = append(0x10346, u);
     assert (u[0] == 0xf0 && u[1] == 0x90 && u[2] == 0x8d && u[3] == 0x86 && u[4] == 0);
 
-    
 
     //next
     char* twochars = "\xe6\x97\xa5\xd1\x88";
@@ -42,6 +41,12 @@ int main()
     cp = next(w, threechars + 9);
     assert (cp == 0x0448);
     assert (w == threechars + 9);
+
+    //peek_next
+    char* const cw = twochars;
+    cp = peek_next(cw, cw + 6);
+    assert (cp == 0x65e5);
+    assert (cw == twochars);
 
     //prior
     w = twochars + 3;
@@ -196,6 +201,11 @@ int main()
     cp = unchecked::next(w);
     assert (cp == 0x0448);
     assert (w == threechars + 9);
+
+    //peek_next
+    cp = unchecked::peek_next(cw);
+    assert (cp == 0x65e5);
+    assert (cw == twochars);
 
 
     //previous (calls prior internally)
