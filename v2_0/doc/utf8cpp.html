@@ -299,6 +299,46 @@ assert (w == twochars + <span class="literal">3</span>);
       thrown.
     </p>
     <h4>
+      utf8::peek_next
+    </h4>
+    <p class="version">
+    Available in version 2.1 and later.
+    </p>
+    <p>
+      Given the iterator to the beginning of the UTF-8 sequence, it returns the code
+      point for the following sequence without changing the value of the iterator. 
+    </p>
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+uint32_t peek_next(octet_iterator it, octet_iterator end);
+   
+</pre>
+    <p>
+      <code>it</code>: an iterator pointing to the beginning of an UTF-8
+      encoded code point.<br>
+       <code>end</code>: end of the UTF-8 sequence to be processed. If <code>it</code>
+      gets equal to <code>end</code> during the extraction of a code point, an
+      <code>utf8::not_enough_room</code> exception is thrown.<br>
+       <span class="return_value">Return value</span>: the 32 bit representation of the
+      processed UTF-8 code point.
+    </p>
+    <p>
+      Example of use:
+    </p>
+<pre>
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">char</span>* w = twochars;
+<span class="keyword">int</span> cp = peek_next(w, twochars + <span class="literal">6</span>);
+assert (cp == <span class="literal">0x65e5</span>);
+assert (w == twochars);
+</pre>
+    <p>
+      In case of an invalid UTF-8 seqence, a <code>utf8::invalid_utf8</code> exception is
+      thrown.
+    </p>
+    <h4>
       utf8::prior
     </h4>
     <p class="version">
@@ -1009,6 +1049,42 @@ assert (w == twochars + <span class="literal">3</span>);
 </pre>
     <p>
       This is a faster but less safe version of <code>utf8::next</code>. It does not
+      check for validity of the supplied UTF-8 sequence.
+    </p>
+    <h4>
+      utf8::unchecked::peek_next
+    </h4>
+    <p class="version">
+    Available in version 2.1 and later.
+    </p>
+    <p>
+      Given the iterator to the beginning of a UTF-8 sequence, it returns the code point.
+    </p>
+<pre>
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt;
+uint32_t peek_next(octet_iterator it);
+   
+</pre>
+    <p>
+      <code>it</code>: an iterator pointing to the beginning of an UTF-8
+      encoded code point.<br>
+       <span class="return_value">Return value</span>: the 32 bit representation of the
+      processed UTF-8 code point.
+    </p>
+    <p>
+      Example of use:
+    </p>
+<pre>
+<span class="keyword">char</span>* twochars = <span class=
+"literal">"\xe6\x97\xa5\xd1\x88"</span>;
+<span class="keyword">char</span>* w = twochars;
+<span class="keyword">int</span> cp = unchecked::peek_next(w);
+assert (cp == <span class="literal">0x65e5</span>);
+assert (w == twochars);
+</pre>
+    <p>
+      This is a faster but less safe version of <code>utf8::peek_next</code>. It does not
       check for validity of the supplied UTF-8 sequence.
     </p>
     <h4>

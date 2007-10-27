@@ -59,7 +59,9 @@ int main(int argc, char** argv)
         unsigned char_count = 0;
         string::iterator it = line_start;
         while (it != line_end) {
-            next(it, line_end);
+            unsigned int next_cp = peek_next(it, line_end);
+            if (next(it, line_end) != next_cp)
+                cout << "Line " << line_count << ": Error: peek_next gave a different result than next" << '\n';
             char_count++;
         }
         if (char_count != utf32_line.size())
@@ -121,7 +123,9 @@ int main(int argc, char** argv)
         char_count = 0;
         it = line_start;
         while (it != line_end) {
-            unchecked::next(it);
+            unsigned int next_cp = unchecked::peek_next(it); 
+            if (unchecked::next(it) != next_cp)
+              cout << "Line " << line_count << ": Error: unchecked::peek_next gave a different result than unchecked::next" << '\n';;
             char_count++;
         }
         if (char_count != utf32_line.size())
