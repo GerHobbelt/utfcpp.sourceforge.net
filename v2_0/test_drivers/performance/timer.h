@@ -8,8 +8,8 @@ struct timer {
           using namespace std;
           end = clock();
           unsigned milliseconds = (end - start)*1000 / CLOCKS_PER_SEC;
-          report << "Spent " << milliseconds << "ms here\n";  
-       } 
+          report << "Spent " << milliseconds << "ms here\n";
+       }
 
     std::clock_t start;
     std::clock_t end;
@@ -17,5 +17,5 @@ struct timer {
 
 private:
     // just to surpress a VC++ 8.0 warning
-    timer& operator = (const timer&) {};
+    timer& operator = (const timer&);
 };

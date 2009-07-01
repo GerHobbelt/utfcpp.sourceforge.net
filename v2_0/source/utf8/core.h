@@ -105,6 +105,7 @@ namespace internal
     template <typename octet_iterator>
     utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t* code_point)
     {
+        octet_iterator original_it = it;
         uint32_t cp = mask8(*it);
         // Check the lead octet
         typedef typename std::iterator_traits<octet_iterator>::difference_type octet_difference_type;
@@ -112,7 +113,7 @@ namespace internal
 
         // "Shortcut" for ASCII characters
         if (length == 1) {
-            if (end - it > 0) {
+            if (std::distance(it, end) > 0) {
                 if (code_point)
                     *code_point = cp;
                 ++it;
@@ -136,7 +137,7 @@ namespace internal
                     cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
                 }
                 else {
-                    --it;
+                    it = original_it;
                     return INCOMPLETE_SEQUENCE;
                 }
             break;
@@ -147,12 +148,12 @@ namespace internal
                         cp += (*it) & 0x3f;
                     }
                     else {
-                        std::advance(it, -2);
+                        it = original_it;
                         return INCOMPLETE_SEQUENCE;
                     }
                 }
                 else {
-                    --it;
+                    it = original_it;
                     return INCOMPLETE_SEQUENCE;
                 }
             break;
@@ -165,17 +166,17 @@ namespace internal
                             cp += (*it) & 0x3f;
                         }
                         else {
-                            std::advance(it, -3);
+                            it = original_it;
                             return INCOMPLETE_SEQUENCE;
                         }
                     }
                     else {
-                        std::advance(it, -2);
+                        it = original_it;
                         return INCOMPLETE_SEQUENCE;
                     }
                 }
                 else {
-                    --it;
+                    it = original_it;
                     return INCOMPLETE_SEQUENCE;
                 }
             break;
@@ -183,7 +184,7 @@ namespace internal
         // Is the code point valid?
         if (!is_code_point_valid(cp)) {
             for (octet_difference_type i = 0; i < length - 1; ++i)
-                --it;
+                it = original_it;
             return INVALID_CODE_POINT;
         }
 
@@ -192,19 +193,19 @@ namespace internal
 
         if (cp < 0x80) {
             if (length != 1) {
-                std::advance(it, -(length-1));
+                it = original_it;
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x800) {
             if (length != 2) {
-                std::advance(it, -(length-1));
+                it = original_it;
                 return OVERLONG_SEQUENCE;
             }
         }
         else if (cp < 0x10000) {
             if (length != 3) {
-                std::advance(it, -(length-1));
+                it = original_it;
                 return OVERLONG_SEQUENCE;
             }
         }

@@ -53,30 +53,29 @@ int main(int argc, char** argv)
         timer t(cout);
         utf8::unchecked::utf8to16(buf, buf + length, utf16buf);
     }
-
     // the UTF-16 result will not be larger than this (I hope :) )
     wchar_t* utf16iconvbuf = new wchar_t[wlength];
     {
         memset (utf16iconvbuf, 0 , wlength * sizeof(wchar_t));
         // win32
         cout << "win32: ";
-        
+
         {
             timer t(cout);
             MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, buf, length, utf16iconvbuf, int(wlength));
         }
-        
+
     }
 
     // just check the correctness while we are here:
-    if (!equal(utf16buf, utf16buf + wlength, utf16iconvbuf)) 
+    if (!equal(utf16buf, utf16buf + wlength, utf16iconvbuf))
         cout << "Different result!!!";
-    
+
     // the other way around
     cout << "UTF16 to UTF-8\n";
     {
         //win32
-        memset(buf, 0, length);    
+        memset(buf, 0, length);
         cout<< "win32: ";
 
         {
@@ -92,14 +91,14 @@ int main(int argc, char** argv)
         timer t(cout);
         utf8::unchecked::utf16to8(utf16buf, utf16buf + wlength, buf);
     }
-    
+
     {
         memset (buf, 0 , length);
         cout << "utf16to8: ";
         timer t(cout);
         utf8::utf16to8(utf16buf, utf16buf + wlength, buf);
     }
-    
+
     delete [] buf;
     delete [] utf16buf;
 }
