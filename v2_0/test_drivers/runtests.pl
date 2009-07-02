@@ -33,7 +33,7 @@ print REPORT "\n";
 print REPORT "==================Negative Test ==================\n"; 
 close($report_name);
 chdir 'negative';
-`./negative >> ../$report_name`;
+`./negative ../../test_data/negative/utf8_invalid.txt >> ../$report_name`;
 chdir '..';
 die if !open(REPORT, ">>$report_name");
 print REPORT "==================End of negative test==================\n";

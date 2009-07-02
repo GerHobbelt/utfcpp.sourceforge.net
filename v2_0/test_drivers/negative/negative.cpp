@@ -7,16 +7,22 @@ using namespace utf8;
 #include <algorithm>
 using namespace std;
 
-const char* TEST_FILE_PATH = "../../../test_data/negative/utf8_invalid.txt";
 const unsigned INVALID_LINES[] = { 75, 76, 82, 83, 84, 85, 93, 102, 103, 105, 106, 107, 108, 109, 110, 114, 115, 116, 117, 124, 125, 130, 135, 140, 145, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 169, 175, 176, 177, 207, 208, 209, 210, 211, 220, 221, 222, 223, 224, 232, 233, 234, 235, 236, 247, 248, 249, 250, 251, 252, 253, 257, 258, 259, 260, 261, 262, 263, 264, 268, 269};
 const unsigned* INVALID_LINES_END = INVALID_LINES + sizeof(INVALID_LINES)/sizeof(unsigned);
 
-int main()
+int main(int argc, char** argv)
 {
+    string test_file_path;
+    if (argc == 2) 
+        test_file_path = argv[1];
+    else {
+        cout << "Wrong number of arguments" << endl;
+        exit(0);
+    }
     // Open the test file
-    ifstream fs8(TEST_FILE_PATH);
+    ifstream fs8(test_file_path.c_str());
     if (!fs8.is_open()) {
-    cout << "Could not open " << TEST_FILE_PATH << endl;
+    cout << "Could not open " << test_file_path << endl;
     return 0;
     }
 
