@@ -57,6 +57,10 @@
         </li>
         <li>
           <a href="#examples">Examples of Use</a>
+          <ul class="toc">
+            <li>
+              <a href=#introsample>Introductionary Sample </a>
+            </li>
         </li>
         <li>
           <a href="#reference">Reference</a>
@@ -115,11 +119,13 @@
     <h2 id="examples">
       Examples of use
     </h2>
+    <h3 id="introsample">
+      Introductionary Sample
+    </h3>
     <p>
-      To illustrate the use of this utf8 library, we shall open a file containing UTF-8
-      encoded text, check whether it starts with a byte order mark, read each line into a
-      <code>std::string</code>, check it for validity, convert the text to UTF-16, and
-      back to UTF-8:
+      To illustrate the use of this utf8 library, let's start with a small but complete program 
+      that opens a file containing UTF-8 encoded text, reads it line by line, checks each line
+      for invalid UTF-8 byte sequences, and converts it to UTF-16 encoding and back to UTF-8:
     </p>
 <pre>
 <span class="preprocessor">#include &lt;fstream&gt;</span>
@@ -135,26 +141,17 @@
         <span class="keyword">return</span> <span class="literal">0</span>;
     }
     <span class="keyword">const char</span>* test_file_path = argv[1];
-    <span class="comment">// Open the test file (must be UTF-8 encoded)</span>
+    <span class="comment">// Open the test file (contains UTF-8 encoded text)</span>
     ifstream fs8(test_file_path);
     <span class="keyword">if</span> (!fs8.is_open()) {
     cout &lt;&lt; <span class=
 "literal">"Could not open "</span> &lt;&lt; test_file_path &lt;&lt; endl;
     <span class="keyword">return</span> <span class="literal">0</span>;
     }
-    <span class="comment">// Read the first line of the file</span>
     <span class="keyword">unsigned</span> line_count = <span class="literal">1</span>;
     string line;
-    <span class="keyword">if</span> (!getline(fs8, line)) 
-        <span class="keyword">return</span> <span class="literal">0</span>;
-    <span class="comment">// Look for utf-8 byte-order mark at the beginning</span>
-    <span class="keyword">if</span> (line.size() &gt; <span class="literal">2</span>) {
-        <span class="keyword">if</span> (utf8::is_bom(line.c_str()))
-            cout &lt;&lt; <span class=
-"literal">"There is a byte order mark at the beginning of the file\n"</span>;
-    }
     <span class="comment">// Play with all the lines in the file</span>
-    <span class="keyword">do</span> {
+    <span class="keyword">while</span> (getline(fs8, line)) {
        <span class="comment">// check for invalid utf-8 (for a simple yes/no check, there is also utf8::is_valid function)</span>
         string::iterator end_it = utf8::find_invalid(line.begin(), line.end());
         <span class="keyword">if</span> (end_it != line.end()) {
@@ -181,11 +178,10 @@
             cout &lt;&lt; <span class=
 "literal">"Error in UTF-16 conversion at line: "</span> &lt;&lt; line_count &lt;&lt; <span
  class="literal">"\n"</span>;        
-        getline(fs8, line);
         line_count++;
-    } <span class="keyword">while</span> (!fs8.eof());
+    }
     <span class="keyword">return</span> <span class="literal">0</span>;
-}
+
 </pre>
     <p>
       In the previous code sample, we have seen the use of the following functions from
