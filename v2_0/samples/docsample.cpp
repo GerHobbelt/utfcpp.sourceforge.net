@@ -21,20 +21,10 @@ int main(int argc, char** argv)
     return 0;
     }
 
-    // Read the first line of the file
     unsigned line_count = 1;
     string line;
-    if (!getline(fs8, line)) 
-        return 0;
-
-    // Look for utf-8 byte-order mark at the beginning
-    if (line.size() > 2) {
-        if (utf8::is_bom(line.c_str()))
-          cout << "There is a byte order mark at the beginning of the file\n";
-    }
-
     // Play with all the lines in the file
-    do {
+    while (getline(fs8, line)) {
         // check for invalid utf-8 (for a simple yes/no check, there is also utf8::is_valid function)
         string::iterator end_it = utf8::find_invalid(line.begin(), line.end());
         if (end_it != line.end()) {
@@ -55,9 +45,8 @@ int main(int argc, char** argv)
         if (utf8line != string(line.begin(), end_it))
             cout << "Error in UTF-16 conversion at line: " << line_count << "\n";        
 
-        getline(fs8, line);
         line_count++;
-    } while (!fs8.eof());
+    } 
 
     return 0;
 }
