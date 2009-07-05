@@ -100,118 +100,192 @@ namespace internal
             return 0;
     }
 
+    bool is_overlong_sequence(uint32_t cp, int length)
+    {
+        if (cp < 0x80) {
+            if (length != 1) 
+                return true;
+        }
+        else if (cp < 0x800) {
+            if (length != 2) 
+                return true;
+        }
+        else if (cp < 0x10000) {
+            if (length != 3) 
+                return true;
+        }
+
+        return false;
+    }
+
     enum utf_error {UTF8_OK, NOT_ENOUGH_ROOM, INVALID_LEAD, INCOMPLETE_SEQUENCE, OVERLONG_SEQUENCE, INVALID_CODE_POINT};
+
+    /// get_sequence_x functions decode utf-8 sequences of the length x
+
+    template <typename octet_iterator>
+    utf_error get_sequence_1(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    {
+        if (it != end) {
+            if (code_point)
+                *code_point = mask8(*it);
+            return UTF8_OK;
+        }
+        return NOT_ENOUGH_ROOM;
+    }
+
+    template <typename octet_iterator>
+    utf_error get_sequence_2(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    {
+        utf_error ret_code = NOT_ENOUGH_ROOM;
+
+        if (it != end) {
+            uint32_t cp = mask8(*it);
+            if (++it != end) {
+                if (is_trail(*it)) {
+                    cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
+
+                    if (code_point)
+                        *code_point = cp;
+                    ret_code = UTF8_OK;
+                }
+                else
+                    ret_code = INCOMPLETE_SEQUENCE;
+            }
+            else
+                ret_code = NOT_ENOUGH_ROOM;
+        }
+
+        return ret_code;
+    }
+
+    template <typename octet_iterator>
+    utf_error get_sequence_3(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    {
+        utf_error ret_code = NOT_ENOUGH_ROOM;
+
+        if (it != end) {
+            uint32_t cp = mask8(*it);
+            if (++it != end) {
+                if (is_trail(*it)) {
+                    cp = ((cp << 12) & 0xffff) + ((mask8(*it) << 6) & 0xfff);
+                    if (++it != end) {
+                        if (is_trail(*it)) {
+                            cp += (*it) & 0x3f;
+
+                            if (code_point)
+                                *code_point = cp;
+                            ret_code = UTF8_OK;
+                        }
+                        else 
+                            ret_code = INCOMPLETE_SEQUENCE;
+                    }
+                    else
+                        ret_code = NOT_ENOUGH_ROOM;
+                }
+                else
+                    ret_code = INCOMPLETE_SEQUENCE;
+            }
+            else
+                ret_code = NOT_ENOUGH_ROOM;
+        }
+
+        return ret_code;
+    }
+
+    template <typename octet_iterator>
+    utf_error get_sequence_4(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    {
+        utf_error ret_code = NOT_ENOUGH_ROOM;
+
+        if (it != end) {
+            uint32_t cp = mask8(*it);
+            if (++it != end) {
+                if (is_trail(*it)) {
+                    cp = ((cp << 18) & 0x1fffff) + ((mask8(*it) << 12) & 0x3ffff);
+                    if (++it != end) {
+                        if (is_trail(*it)) {
+                            cp += (mask8(*it) << 6) & 0xfff;
+                            if (++it != end) {
+                                if (is_trail(*it)) {
+                                    cp += (*it) & 0x3f;
+
+                                    if (code_point)
+                                        *code_point = cp;
+                                    ret_code = UTF8_OK;
+                                }
+                                else
+                                    ret_code = INCOMPLETE_SEQUENCE;
+                            }
+                            else
+                                ret_code = NOT_ENOUGH_ROOM;
+                        }
+                        else
+                            ret_code = INCOMPLETE_SEQUENCE;
+                    }
+                    else
+                        ret_code = NOT_ENOUGH_ROOM;
+                }
+                else 
+                    ret_code = INCOMPLETE_SEQUENCE;
+            }
+            else
+                ret_code = NOT_ENOUGH_ROOM;
+        }
+
+        return ret_code;
+    }
 
     template <typename octet_iterator>
     utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t* code_point)
     {
+        // Save the original value of it so we can go back in case of failure
+        // Of course, it does not make much sense with i.e. stream iterators
         octet_iterator original_it = it;
-        uint32_t cp = mask8(*it);
-        // Check the lead octet
+
+        uint32_t cp = 0;
+        // Determine the sequence length based on the lead octet
         typedef typename std::iterator_traits<octet_iterator>::difference_type octet_difference_type;
         octet_difference_type length = sequence_length(it);
+        if (length == 0)
+            return INVALID_LEAD;
 
-        // "Shortcut" for ASCII characters
-        if (length == 1) {
-            if (std::distance(it, end) > 0) {
-                if (code_point)
-                    *code_point = cp;
-                ++it;
-                return UTF8_OK;
-            }
-            else
-                return NOT_ENOUGH_ROOM;
-        }
-
-        // Do we have enough memory?
-        if (std::distance(it, end) < length)
-            return NOT_ENOUGH_ROOM;
-
-        // Check trail octets and calculate the code point
+        // Now that we have a valid sequence length, get trail octets and calculate the code point
+        utf_error err = UTF8_OK;
         switch (length) {
-            case 0:
-                return INVALID_LEAD;
+            case 1:
+                err = get_sequence_1(it, end, &cp);
                 break;
             case 2:
-                if (is_trail(*(++it))) {
-                    cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
-                }
-                else {
-                    it = original_it;
-                    return INCOMPLETE_SEQUENCE;
-                }
+                err = get_sequence_2(it, end, &cp);
             break;
             case 3:
-                if (is_trail(*(++it))) {
-                    cp = ((cp << 12) & 0xffff) + ((mask8(*it) << 6) & 0xfff);
-                    if (is_trail(*(++it))) {
-                        cp += (*it) & 0x3f;
-                    }
-                    else {
-                        it = original_it;
-                        return INCOMPLETE_SEQUENCE;
-                    }
-                }
-                else {
-                    it = original_it;
-                    return INCOMPLETE_SEQUENCE;
-                }
+                err = get_sequence_3(it, end, &cp);
             break;
             case 4:
-                if (is_trail(*(++it))) {
-                    cp = ((cp << 18) & 0x1fffff) + ((mask8(*it) << 12) & 0x3ffff);
-                    if (is_trail(*(++it))) {
-                        cp += (mask8(*it) << 6) & 0xfff;
-                        if (is_trail(*(++it))) {
-                            cp += (*it) & 0x3f;
-                        }
-                        else {
-                            it = original_it;
-                            return INCOMPLETE_SEQUENCE;
-                        }
-                    }
-                    else {
-                        it = original_it;
-                        return INCOMPLETE_SEQUENCE;
-                    }
-                }
-                else {
-                    it = original_it;
-                    return INCOMPLETE_SEQUENCE;
-                }
+                err = get_sequence_4(it, end, &cp);
             break;
         }
-        // Is the code point valid?
-        if (!is_code_point_valid(cp)) {
-            for (octet_difference_type i = 0; i < length - 1; ++i)
-                it = original_it;
-            return INVALID_CODE_POINT;
+
+        if (err == UTF8_OK) {
+            // Decoding suceeded. Now, security checks...
+            if (is_code_point_valid(cp)) {
+                if (!is_overlong_sequence(cp, length)){
+                    // Passed! Return here.
+                    if (code_point)
+                        *code_point = cp;
+                    ++it;
+                    return UTF8_OK;
+                }
+                else
+                    err = OVERLONG_SEQUENCE;
+            }
+            else 
+                err = INVALID_CODE_POINT;
         }
 
-        if (code_point)
-            *code_point = cp;
-
-        if (cp < 0x80) {
-            if (length != 1) {
-                it = original_it;
-                return OVERLONG_SEQUENCE;
-            }
-        }
-        else if (cp < 0x800) {
-            if (length != 2) {
-                it = original_it;
-                return OVERLONG_SEQUENCE;
-            }
-        }
-        else if (cp < 0x10000) {
-            if (length != 3) {
-                it = original_it;
-                return OVERLONG_SEQUENCE;
-            }
-        }
-
-        ++it;
-        return UTF8_OK;
+        // Failure branch - restore the original value of the iterator
+        it = original_it;
+        return err;
     }
 
     template <typename octet_iterator>
