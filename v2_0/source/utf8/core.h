@@ -267,7 +267,7 @@ namespace internal
         }
 
         if (err == UTF8_OK) {
-            // Decoding suceeded. Now, security checks...
+            // Decoding succeeded. Now, security checks...
             if (is_code_point_valid(cp)) {
                 if (!is_overlong_sequence(cp, length)){
                     // Passed! Return here.

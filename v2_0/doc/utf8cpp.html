@@ -61,6 +61,12 @@
             <li>
               <a href=#introsample>Introductionary Sample </a>
             </li>
+            <li>
+              <a href=#validfile>Checking if a file contains valid UTF-8 text</a>
+            </li>
+            <li>
+              <a href=#fixinvalid>Ensure that a string contains valid UTF-8 text</a>
+            </li>
         </li>
         <li>
           <a href="#reference">Reference</a>
@@ -140,6 +146,7 @@
         cout &lt;&lt; <span class="literal">"\nUsage: docsample filename\n"</span>;
         <span class="keyword">return</span> <span class="literal">0</span>;
     }
+
     <span class="keyword">const char</span>* test_file_path = argv[1];
     <span class="comment">// Open the test file (contains UTF-8 encoded text)</span>
     ifstream fs8(test_file_path);
@@ -148,6 +155,7 @@
 "literal">"Could not open "</span> &lt;&lt; test_file_path &lt;&lt; endl;
     <span class="keyword">return</span> <span class="literal">0</span>;
     }
+
     <span class="keyword">unsigned</span> line_count = <span class="literal">1</span>;
     string line;
     <span class="comment">// Play with all the lines in the file</span>
@@ -162,37 +170,64 @@
 "literal">"This part is fine: "</span> &lt;&lt; string(line.begin(), end_it) &lt;&lt; <span
  class="literal">"\n"</span>;
         }
+
         <span class="comment">// Get the line length (at least for the valid part)</span>
         <span class="keyword">int</span> length = utf8::distance(line.begin(), end_it);
         cout &lt;&lt; <span class=
 "literal">"Length of line "</span> &lt;&lt; line_count &lt;&lt; <span class=
 "literal">" is "</span> &lt;&lt; length &lt;&lt;  <span class="literal">"\n"</span>;
+
         <span class="comment">// Convert it to utf-16</span>
         vector&lt;unsigned short&gt; utf16line;
         utf8::utf8to16(line.begin(), end_it, back_inserter(utf16line));
+
         <span class="comment">// And back to utf-8</span>
         string utf8line; 
         utf8::utf16to8(utf16line.begin(), utf16line.end(), back_inserter(utf8line));
+
         <span class="comment">// Confirm that the conversion went OK:</span>
         <span class="keyword">if</span> (utf8line != string(line.begin(), end_it))
             cout &lt;&lt; <span class=
 "literal">"Error in UTF-16 conversion at line: "</span> &lt;&lt; line_count &lt;&lt; <span
  class="literal">"\n"</span>;        
+
         line_count++;
     }
     <span class="keyword">return</span> <span class="literal">0</span>;
-
+}
 </pre>
     <p>
-      In the previous code sample, we have seen the use of the following functions from
-      <code>utf8</code> namespace: first we used <code>is_bom</code> function to detect
-      UTF-8 byte order mark at the beginning of the file; then for each line we performed
+      In the previous code sample, for each line we performed
       a detection of invalid UTF-8 sequences with <code>find_invalid</code>; the number
-      of characters (more precisely - the number of Unicode code points) in each line was
+      of characters (more precisely - the number of Unicode code points, including the end
+      of line and even BOM if there is one) in each line was
       determined with a use of <code>utf8::distance</code>; finally, we have converted
       each line to UTF-16 encoding with <code>utf8to16</code> and back to UTF-8 with
       <code>utf16to8</code>.
     </p>
+    <h3 id="validfile">Checking if a file contains valid UTF-8 text</h3>
+<pre>    
+<span class="keyword">bool</span> valid_utf8_file(i<span class="keyword">const char</span>* file_name)
+{
+    ifstream ifs(file_name);
+    <span class="keyword">if</span> (!ifs)
+        <span class="keyword">return false</span>; <span class="comment">// even better, throw here</span>
+
+    istreambuf_iterator&lt;<span class="keyword">char</span>&gt; it(ifs.rdbuf());
+    istreambuf_iterator&lt;<span class="keyword">char</span>&gt; eos;
+
+    <span class="keyword">return</span> utf8::is_valid(it, eos);
+}
+</pre>
+    <h3 id="fixinvalid">Ensure that a string contains valid UTF-8 text</h3>
+<pre>
+<span class="keyword">void</span> fix_utf8_string(std::string&amp; str)
+{
+    std::string temp;
+    utf8::replace_invalid(str.begin(), str.end(), back_inserter(temp));
+    str = temp;
+}
+</pre>
     <h2 id="reference">
       Reference
     </h2>
