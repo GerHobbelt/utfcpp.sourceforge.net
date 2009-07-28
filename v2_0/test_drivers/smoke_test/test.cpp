@@ -1,4 +1,4 @@
-
+#include <cstring>
 #include <cassert>
 #include <vector>
 #include "../../source/utf8.h"
@@ -24,13 +24,13 @@ int main()
 
 
     //next
-    char* twochars = "\xe6\x97\xa5\xd1\x88";
-    char* w = twochars;
+    const char* twochars = "\xe6\x97\xa5\xd1\x88";
+    const char* w = twochars;
     int cp = next(w, twochars + 6);
     assert (cp == 0x65e5);
     assert (w == twochars + 3);
 
-    char* threechars = "\xf0\x90\x8d\x86\xe6\x97\xa5\xd1\x88";
+    const char* threechars = "\xf0\x90\x8d\x86\xe6\x97\xa5\xd1\x88";
     w = threechars;
     cp = next(w, threechars + 9);
     assert (cp == 0x10346);
@@ -43,7 +43,7 @@ int main()
     assert (w == threechars + 9);
 
     //peek_next
-    char* const cw = twochars;
+    const char* const cw = twochars;
     cp = peek_next(cw, cw + 6);
     assert (cp == 0x65e5);
     assert (cw == twochars);
@@ -150,24 +150,24 @@ int main()
     replace_invalid (invalid_sequence, invalid_sequence + sizeof(invalid_sequence), back_inserter(replace_invalid_result), '?');
     bvalid = is_valid(replace_invalid_result.begin(), replace_invalid_result.end());
     assert (bvalid);
-    char* fixed_invalid_sequence = "a????z";
+    const char* fixed_invalid_sequence = "a????z";
     assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(), fixed_invalid_sequence));
 
     // iterator
-    utf8::iterator<char*> it(threechars, threechars, threechars + 9);
-    utf8::iterator<char*> it2 = it;
+    utf8::iterator<const char*> it(threechars, threechars, threechars + 9);
+    utf8::iterator<const char*> it2 = it;
     assert (it2 == it);
     assert (*it == 0x10346);
     assert (*(++it) == 0x65e5);
     assert ((*it++) == 0x65e5);
     assert (*it == 0x0448);
     assert (it != it2);
-    utf8::iterator<char*> endit (threechars + 9, threechars, threechars + 9);  
+    utf8::iterator<const char*> endit (threechars + 9, threechars, threechars + 9);  
     assert (++it == endit);
     assert (*(--it) == 0x0448);
     assert ((*it--) == 0x0448);
     assert (*it == 0x65e5);
-    assert (--it == utf8::iterator<char*>(threechars, threechars, threechars + 9));
+    assert (--it == utf8::iterator<const char*>(threechars, threechars, threechars + 9));
     assert (*it == 0x10346);
 
     //////////////////////////////////////////////////////////
@@ -270,20 +270,20 @@ int main()
     assert (utf16_end == &utf16result[0] + 4);
     
     // iterator
-    utf8::unchecked::iterator<char*> un_it(threechars);
-    utf8::unchecked::iterator<char*> un_it2 = un_it;
+    utf8::unchecked::iterator<const char*> un_it(threechars);
+    utf8::unchecked::iterator<const char*> un_it2 = un_it;
     assert (un_it2 == un_it);
     assert (*un_it == 0x10346);
     assert (*(++un_it) == 0x65e5);
     assert ((*un_it++) == 0x65e5);
     assert (un_it != un_it2);
     assert (*un_it == 0x0448);
-    utf8::unchecked::iterator<char*> un_endit (threechars + 9);  
+    utf8::unchecked::iterator<const char*> un_endit (threechars + 9);  
     assert (++un_it == un_endit);
     assert (*(--un_it) == 0x0448);
     assert ((*un_it--) == 0x0448);
     assert (*un_it == 0x65e5);
-    assert (--un_it == utf8::unchecked::iterator<char*>(threechars));
+    assert (--un_it == utf8::unchecked::iterator<const char*>(threechars));
     assert (*un_it == 0x10346);
 }
 
