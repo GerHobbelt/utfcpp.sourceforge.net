@@ -1,10 +1,9 @@
 utf8 cpp library
-Release 2.2
+Release 2.2.1
 
-This is a feature release. 
+This is a minor bug fix release aimed at supporting GCC 4.3. 
 
-Changes from version 2.1
-- Implemented feature request [ 2515238 ] "Conflicting ENUM value"
-- Changed internal implementation to allow use of input iterators (as opposed to bidirectional) where it is possible.
+Changes from version 2.2
+- Bug fix [ ID: 2823847 ] "warning from GCC 4.3"
 
 Files included in the release: utf8.h, core.h, checked.h, unchecked.h, utf8cpp.html, ReleaseNotes
