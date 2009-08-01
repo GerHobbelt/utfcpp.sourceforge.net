@@ -100,7 +100,7 @@ namespace internal
             return 0;
     }
 
-    bool is_overlong_sequence(uint32_t cp, int length)
+    inline bool is_overlong_sequence(uint32_t cp, int length)
     {
         if (cp < 0x80) {
             if (length != 1) 
