@@ -72,6 +72,18 @@ namespace internal
     }
 
     template <typename u16>
+    inline bool is_lead_surrogate(u16 cp)
+    {
+        return (cp >= LEAD_SURROGATE_MIN && cp <= LEAD_SURROGATE_MAX);
+    }
+
+    template <typename u16>
+    inline bool is_trail_surrogate(u16 cp)
+    {
+        return (cp >= TRAIL_SURROGATE_MIN && cp <= TRAIL_SURROGATE_MAX);
+    }
+
+    template <typename u16>
     inline bool is_surrogate(u16 cp)
     {
         return (cp >= LEAD_SURROGATE_MIN && cp <= TRAIL_SURROGATE_MAX);

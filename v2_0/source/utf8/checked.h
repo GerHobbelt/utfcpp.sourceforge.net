@@ -204,10 +204,10 @@ namespace utf8
         while (start != end) {
             uint32_t cp = internal::mask16(*start++);
             // Take care of surrogate pairs first
-            if (internal::is_surrogate(cp)) {
+            if (internal::is_lead_surrogate(cp)) {
                 if (start != end) {
                     uint32_t trail_surrogate = internal::mask16(*start++);
-                    if (trail_surrogate >= internal::TRAIL_SURROGATE_MIN && trail_surrogate <= internal::TRAIL_SURROGATE_MAX)
+                    if (internal::is_trail_surrogate(trail_surrogate))
                         cp = (cp << 10) + trail_surrogate + internal::SURROGATE_OFFSET;
                     else
                         throw invalid_utf16(static_cast<uint16_t>(trail_surrogate));
@@ -216,6 +216,10 @@ namespace utf8
                     throw invalid_utf16(static_cast<uint16_t>(*start));
 
             }
+            // Lone trail surrogate
+            else if (internal::is_trail_surrogate(cp))
+                throw invalid_utf16(static_cast<uint16_t>(cp));
+
             result = append(cp, result);
         }
         return result;
