@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 inline void check_impl (bool condition, const char* file, int line)
@@ -18,7 +19,8 @@ inline void check_impl (bool condition, const char* file, int line)
 // Release 1.0 Beta 3
 #include "r1_0Beta3/basic_functionality.h"
 
-
+// Release 2.2.2
+#include "r2_2_2/basic_functionality.h"
 
 int main()
 {
@@ -37,4 +39,8 @@ int main()
 // Release 1.0 Beta 3
 //r1_0Beta3/basic_functionality.h
     id_1538338();   
+
+// Release 2.2.2
+//r2_2_2/basic_functionality.h
+    id_2852872();
 }
