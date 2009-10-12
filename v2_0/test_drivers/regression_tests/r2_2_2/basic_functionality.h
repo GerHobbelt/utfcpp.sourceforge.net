@@ -32,6 +32,7 @@ void id_2857454()
     {
         utf8::utf16to8(lead_surrogate_last, lead_surrogate_last + 2, back_inserter(utf8_result));
         // should throw in the previous line and never get here
+        check(false);
     }
     catch(utf8::invalid_utf16&)
     {
