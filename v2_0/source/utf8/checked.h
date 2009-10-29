@@ -210,7 +210,7 @@ namespace utf8
                         throw invalid_utf16(static_cast<uint16_t>(trail_surrogate));
                 }
                 else
-                    throw invalid_utf16(static_cast<uint16_t>(*start));
+                    throw invalid_utf16(static_cast<uint16_t>(cp));
 
             }
             // Lone trail surrogate
