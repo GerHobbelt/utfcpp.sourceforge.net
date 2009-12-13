@@ -33,8 +33,12 @@ DEALINGS IN THE SOFTWARE.
 
 namespace utf8
 {
+    // Base for the exceptions that may be thrown from the library
+    class exception : public std::exception {
+    };
+
     // Exceptions that may be thrown from the library functions.
-    class invalid_code_point : public std::exception {
+    class invalid_code_point : public exception {
         uint32_t cp;
     public:
         invalid_code_point(uint32_t cp) : cp(cp) {}
@@ -42,7 +46,7 @@ namespace utf8
         uint32_t code_point() const {return cp;}
     };
 
-    class invalid_utf8 : public std::exception {
+    class invalid_utf8 : public exception {
         uint8_t u8;
     public:
         invalid_utf8 (uint8_t u) : u8(u) {}
@@ -50,7 +54,7 @@ namespace utf8
         uint8_t utf8_octet() const {return u8;}
     };
 
-    class invalid_utf16 : public std::exception {
+    class invalid_utf16 : public exception {
         uint16_t u16;
     public:
         invalid_utf16 (uint16_t u) : u16(u) {}
@@ -58,7 +62,7 @@ namespace utf8
         uint16_t utf16_word() const {return u16;}
     };
 
-    class not_enough_room : public std::exception {
+    class not_enough_room : public exception {
     public:
         virtual const char* what() const throw() { return "Not enough space"; }
     };
