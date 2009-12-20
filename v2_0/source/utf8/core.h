@@ -112,7 +112,8 @@ namespace internal
             return 0;
     }
 
-    inline bool is_overlong_sequence(uint32_t cp, int length)
+    template <typename octet_difference_type>
+    inline bool is_overlong_sequence(uint32_t cp, octet_difference_type length)
     {
         if (cp < 0x80) {
             if (length != 1) 
