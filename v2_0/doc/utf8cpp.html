@@ -908,7 +908,8 @@ assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(),
       utf8::is_bom
     </h4>
     <p class="version">
-    Available in version 1.0 and later.
+    Available in version 1.0 and later (the deprecated one argument version) and in version 2.3
+    and later (the two argument version).
     </p>
     <p>
       Checks whether a sequence of three octets is a UTF-8 byte order mark (BOM)
@@ -916,10 +917,14 @@ assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(),
 <pre>
 <span class="keyword">template</span> &lt;<span class=
 "keyword">typename</span> octet_iterator&gt; 
-<span class="keyword">bool</span> is_bom (octet_iterator it);
+<span class="keyword">bool</span> is_bom (octet_iterator it, octet_iterator end);
+<span class="keyword">template</span> &lt;<span class=
+"keyword">typename</span> octet_iterator&gt; 
+<span class="keyword">bool</span> is_bom (octet_iterator it); <span class="comment"> // Deprecated</span>
 </pre>
     <p>
       <code>it</code>: beginning of the 3-octet sequence to check<br>
+      <code>end</code>: pass-end of the sequence to check<br>
        <span class="return_value">Return value</span>: <code>true</code> if the sequence
       is UTF-8 byte order mark; <code>false</code> if not.
     </p>
@@ -930,13 +935,18 @@ assert (std::equal(replace_invalid_result.begin(), replace_invalid_result.end(),
 <span class="keyword">unsigned char</span> byte_order_mark[] = {<span class=
 "literal">0xef</span>, <span class="literal">0xbb</span>, <span class=
 "literal">0xbf</span>};
-<span class="keyword">bool</span> bbom = is_bom(byte_order_mark);
+<span class="keyword">bool</span> bbom = is_bom(byte_order_mark, byte_order_mark + <span class="keyword">sizeof</span>(byte_order_mark));
 assert (bbom == <span class="literal">true</span>);
 </pre>
     <p>
       The typical use of this function is to check the first three bytes of a file. If
       they form the UTF-8 BOM, we want to skip them before processing the actual UTF-8
       encoded text.
+    </p>
+    <p>
+      The older version of the function that takes only one argument is unsafe: if a sequence is 
+      shorter than three bytes, an invalid iterator will be dereferenced. Therefore it is deprecated
+      in favor of the safer version that takes the end of sequence as an argument.
     </p>
     <h3 id="typesutf8">
       Types From utf8 Namespace

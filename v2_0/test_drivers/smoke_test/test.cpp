@@ -141,8 +141,13 @@ int main()
 
     //is_bom
     unsigned char byte_order_mark[] = {0xef, 0xbb, 0xbf};
-    bool bbom = is_bom(byte_order_mark);
+    bool bbom = is_bom(byte_order_mark, byte_order_mark + sizeof(byte_order_mark));
     assert (bbom == true);
+	bool no_bbom = is_bom(threechars, threechars + sizeof(threechars));
+	assert (no_bbom == false);
+	bool unsafe_bbom = is_bom(byte_order_mark);
+    assert (unsafe_bbom == true);
+
     
     //replace_invalid
     char invalid_sequence[] = "a\x80\xe0\xa0\xc0\xaf\xed\xa0\x80z";
