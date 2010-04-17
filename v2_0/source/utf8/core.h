@@ -332,7 +332,7 @@ namespace internal
     }
 
     template <typename octet_iterator>
-    inline bool is_bom (octet_iterator it, octet_iterator end)
+    inline bool starts_with_bom (octet_iterator it, octet_iterator end)
     {
         return (
             ((it != end) && (internal::mask8(*it++)) == bom[0]) &&

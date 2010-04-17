@@ -139,12 +139,14 @@ int main()
     bvalid = is_valid(utf8_with_surrogates, utf8_with_surrogates + 9);
     assert (bvalid == true);
 
-    //is_bom
+    //starts_with_bom
     unsigned char byte_order_mark[] = {0xef, 0xbb, 0xbf};
-    bool bbom = is_bom(byte_order_mark, byte_order_mark + sizeof(byte_order_mark));
+    bool bbom = starts_with_bom(byte_order_mark, byte_order_mark + sizeof(byte_order_mark));
     assert (bbom == true);
-	bool no_bbom = is_bom(threechars, threechars + sizeof(threechars));
+	bool no_bbom = starts_with_bom(threechars, threechars + sizeof(threechars));
 	assert (no_bbom == false);
+
+    //is_bom
 	bool unsafe_bbom = is_bom(byte_order_mark);
     assert (unsafe_bbom == true);
 
