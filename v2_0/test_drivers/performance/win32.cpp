@@ -44,6 +44,7 @@ int main(int argc, char** argv)
         cout << "utf8::utf8to16: ";
         timer t(cout);
         utf8::utf8to16(buf, buf + length, utf16buf);
+		t.print_time();
     }
 
     {
@@ -52,6 +53,7 @@ int main(int argc, char** argv)
         cout << "unchecked::utf8to16: ";
         timer t(cout);
         utf8::unchecked::utf8to16(buf, buf + length, utf16buf);
+		t.print_time();
     }
     // the UTF-16 result will not be larger than this (I hope :) )
     wchar_t* utf16iconvbuf = new wchar_t[wlength];
@@ -63,6 +65,7 @@ int main(int argc, char** argv)
         {
             timer t(cout);
             MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, buf, length, utf16iconvbuf, int(wlength));
+			t.print_time();
         }
 
     }
@@ -81,6 +84,7 @@ int main(int argc, char** argv)
         {
             timer t(cout);
             WideCharToMultiByte(CP_UTF8, 0, utf16buf, int(wlength), buf, length, NULL, NULL);
+			t.print_time();
         }
     }
 
@@ -90,6 +94,7 @@ int main(int argc, char** argv)
         cout << "unchecked::utf16to8: ";
         timer t(cout);
         utf8::unchecked::utf16to8(utf16buf, utf16buf + wlength, buf);
+		t.print_time();
     }
 
     {
@@ -97,6 +102,7 @@ int main(int argc, char** argv)
         cout << "utf16to8: ";
         timer t(cout);
         utf8::utf16to8(utf16buf, utf16buf + wlength, buf);
+		t.print_time();
     }
 
     delete [] buf;
