@@ -988,7 +988,7 @@ assert (bbom == <span class="literal">true</span>);
 <span class="keyword">unsigned char</span> byte_order_mark[] = {<span class=
 "literal">0xef</span>, <span class="literal">0xbb</span>, <span class=
 "literal">0xbf</span>};
-<span class="keyword">bool</span> bbom = is_bom(byte_order_mark, byte_order_mark + <span class="keyword">sizeof</span>(byte_order_mark));
+<span class="keyword">bool</span> bbom = is_bom(byte_order_mark);
 assert (bbom == <span class="literal">true</span>);
 </pre>
     <p>
