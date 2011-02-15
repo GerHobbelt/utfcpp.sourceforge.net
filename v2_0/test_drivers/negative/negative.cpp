@@ -22,8 +22,8 @@ int main(int argc, char** argv)
     // Open the test file
     ifstream fs8(test_file_path.c_str());
     if (!fs8.is_open()) {
-    cout << "Could not open " << test_file_path << endl;
-    return 0;
+        cout << "Could not open " << test_file_path << endl;
+        return 0;
     }
 
     // Read it line by line
@@ -32,20 +32,20 @@ int main(int argc, char** argv)
     while (!fs8.eof()) {
         string line;
         while ((byte = static_cast<char>(fs8.get())) != '\n' && !fs8.eof())
-	    line.push_back(byte);
+            line.push_back(byte);
 
         line_count++;
-	// Print out lines that contain invalid UTF-8
-	if (!is_valid(line.begin(), line.end())) {
-	   const unsigned* u = find(INVALID_LINES, INVALID_LINES_END, line_count);
-	   if (u == INVALID_LINES_END)
-	       cout << "Unexpected invalid utf-8 at line " << line_count << '\n';
+        // Print out lines that contain invalid UTF-8
+        if (!is_valid(line.begin(), line.end())) {
+            const unsigned* u = find(INVALID_LINES, INVALID_LINES_END, line_count);
+            if (u == INVALID_LINES_END)
+                cout << "Unexpected invalid utf-8 at line " << line_count << '\n';
 
-           // try fixing it:
-           string fixed_line;
-           replace_invalid(line.begin(), line.end(), back_inserter(fixed_line));
-           if (!is_valid(fixed_line.begin(), fixed_line.end()))
-               cout << "replace_invalid() resulted in an invalid utf-8 at line " << line_count << '\n';
+            // try fixing it:
+            string fixed_line;
+            replace_invalid(line.begin(), line.end(), back_inserter(fixed_line));
+            if (!is_valid(fixed_line.begin(), fixed_line.end()))
+                cout << "replace_invalid() resulted in an invalid utf-8 at line " << line_count << '\n';
         }
     }
 }
