@@ -1,13 +1,12 @@
 utf8 cpp library
-Release 2.3
+Release 2.3.1
 
-This is a relatively minor feature release based on reports from users of the library. There are also improvements in documentation: exception classes are documented.
+A bug fix release. Special thanks to dalle and Ivan Sorokin who reported the bugs.
 
-Changes from version 2.2.4
-- Feature request [2857462]: Proposed minor extension: safe version of is_bom. 
-- Feature request [2885695]: "Group" utf8 exceptions. 
-- Bug fix [2906315]: < instead != in utf8to32.
-- Bug fix [2915657]: 64bit portability issue. 
-- Bug fix [2960112]: is_bom wording fix. 
+Changes from version 2.3
+- Bug fix [3025042]: is_bom documentation issue.
+- Bug fix [3083640]: is_code_point_valid incorrectly returns false.
+- Bug fix [3167987]: prior moves it before start.
+- Bug fix [3185087]: utf8::prior and utf8::previous documentation issue.
 
 Files included in the release: utf8.h, core.h, checked.h, unchecked.h, utf8cpp.html, ReleaseNotes
