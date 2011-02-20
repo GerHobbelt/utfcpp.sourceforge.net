@@ -441,7 +441,9 @@ assert (w == twochars);
       This function has two purposes: one is two iterate backwards through a UTF-8
       encoded string. Note that it is usually a better idea to iterate forward instead,
       since <code>utf8::next</code> is faster. The second purpose is to find a beginning
-      of a UTF-8 sequence if we have a random position within a string.
+      of a UTF-8 sequence if we have a random position within a string. Note that in that
+      case <code>utf8::prior</code> may not detect an invalid UTF-8 sequence in some scenarios:
+      for instance if there are superfluous trail octets, it will just skip them.
     </p> 
     <p>
       <code>it</code> will typically point to the beginning of
@@ -451,10 +453,12 @@ assert (w == twochars);
       beginning with that octet is decoded to a 32 bit representation and returned.
     </p>
     <p>
-      In case <code>pass_end</code> is reached before a UTF-8 lead octet is hit, or if an
+      In case <code>start</code> is reached before a UTF-8 lead octet is hit, or if an
       invalid UTF-8 sequence is started by the lead octet, an <code>invalid_utf8</code>
       exception is thrown.
     </p>
+    <p>In case <code>start</code> equals <code>it</code>, a <code>not_enough_room</code>
+      exception is thrown.
     <h4>
       utf8::previous
     </h4>
@@ -512,7 +516,7 @@ assert (w == twochars);
       beginning with that octet is decoded to a 32 bit representation and returned.
     </p>
     <p>
-      In case <code>pass_end</code> is reached before a UTF-8 lead octet is hit, or if an
+      In case <code>pass_start</code> is reached before a UTF-8 lead octet is hit, or if an
       invalid UTF-8 sequence is started by the lead octet, an <code>invalid_utf8</code>
       exception is thrown
     </p>
