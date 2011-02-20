@@ -50,13 +50,6 @@ check (!is_valid(udbff_dc00, udbff_dc00 + 6));
 
 unsigned char udbff_dfff[] = {0xed, 0xaf, 0xbf, 0xed, 0xbf, 0xbf};
 check (!is_valid(udbff_dfff, udbff_dfff + 6));
-
-// Other illegal code points 
-unsigned char ufffe[] = {0xef, 0xbf, 0xbe};
-check (!is_valid(ufffe, ufffe + 3));
-
-unsigned char uffff[] = {0xef, 0xbf, 0xbf};
-check (!is_valid(uffff, uffff + 3));
 }
 
 // [ 1525236 ] utf8::is_valid does not detect overlong sequences
