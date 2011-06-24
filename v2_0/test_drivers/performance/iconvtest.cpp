@@ -1,4 +1,5 @@
 #include <iconv.h>
+#include <string.h>
 #include "../../source/utf8.h"
 #include "timer.h"
 #include <fstream>
