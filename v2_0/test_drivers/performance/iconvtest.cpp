@@ -46,6 +46,7 @@ int main(int argc, char** argv)
         cout << "utf8::utf8to16: ";
         timer t(cout);
         utf8::utf8to16(buf, buf + length, utf16buf);
+        t.print_time();
     }
 
     {
@@ -54,6 +55,7 @@ int main(int argc, char** argv)
         cout << "unchecked::utf8to16: ";
         timer t(cout);
         utf8::unchecked::utf8to16(buf, buf + length, utf16buf);
+        t.print_time();	
     }
 
     // the UTF-16 result will not be larger than this (I hope :) )
@@ -75,6 +77,7 @@ int main(int argc, char** argv)
         {
             timer t(cout);
             iconv(cd, &inbuf, &in_bytes_left, &outbuf, &out_bytes_left);
+            t.print_time();
         }
         iconv_close(cd);
     }
@@ -102,6 +105,7 @@ int main(int argc, char** argv)
         {
             timer t(cout);
             iconv(cd, &inbuf, &in_bytes_left, &outbuf, &out_bytes_left);
+            t.print_time();
         }
         iconv_close(cd);
     }
@@ -112,6 +116,7 @@ int main(int argc, char** argv)
         cout << "unchecked::utf16to8: ";
         timer t(cout);
         utf8::unchecked::utf16to8(utf16buf, utf16buf + wlength, buf);
+        t.print_time();
     }
     
     {
@@ -119,6 +124,7 @@ int main(int argc, char** argv)
         cout << "utf16to8: ";
         timer t(cout);
         utf8::utf16to8(utf16buf, utf16buf + wlength, buf);
+        t.print_time();
     }
    
     delete [] buf;
