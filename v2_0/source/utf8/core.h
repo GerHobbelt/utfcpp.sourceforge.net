@@ -133,120 +133,101 @@ namespace internal
 
     enum utf_error {UTF8_OK, NOT_ENOUGH_ROOM, INVALID_LEAD, INCOMPLETE_SEQUENCE, OVERLONG_SEQUENCE, INVALID_CODE_POINT};
 
-    /// get_sequence_x functions decode utf-8 sequences of the length x
+    /// Helper for get_sequence_x
+    template <typename octet_iterator>
+    utf_error increase_safely(octet_iterator& it, octet_iterator end)
+    {
+        if (++it == end)
+            return NOT_ENOUGH_ROOM;
 
+        if (!utf8::internal::is_trail(*it))
+            return INCOMPLETE_SEQUENCE;
+        
+        return UTF8_OK;
+    }
+
+    #define UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(IT, END) {utf_error ret = increase_safely(IT, END); if (ret != UTF8_OK) return ret;}    
+
+    /// get_sequence_x functions decode utf-8 sequences of the length x
     template <typename octet_iterator>
     utf_error get_sequence_1(octet_iterator& it, octet_iterator end, uint32_t* code_point)
     {
-        if (it != end) {
-            if (code_point)
-                *code_point = utf8::internal::mask8(*it);
-            return UTF8_OK;
-        }
-        return NOT_ENOUGH_ROOM;
+        if (it == end)
+            return NOT_ENOUGH_ROOM;
+
+	if (code_point)
+            *code_point = utf8::internal::mask8(*it);
+
+        return UTF8_OK;
     }
 
     template <typename octet_iterator>
     utf_error get_sequence_2(octet_iterator& it, octet_iterator end, uint32_t* code_point)
     {
-        utf_error ret_code = NOT_ENOUGH_ROOM;
+        if (it == end) 
+            return NOT_ENOUGH_ROOM;
+        
+        uint32_t cp = utf8::internal::mask8(*it);
 
-        if (it != end) {
-            uint32_t cp = utf8::internal::mask8(*it);
-            if (++it != end) {
-                if (utf8::internal::is_trail(*it)) {
-                    cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
+        UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-                    if (code_point)
-                        *code_point = cp;
-                    ret_code = UTF8_OK;
-                }
-                else
-                    ret_code = INCOMPLETE_SEQUENCE;
-            }
-            else
-                ret_code = NOT_ENOUGH_ROOM;
-        }
+        cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
 
-        return ret_code;
+        if (code_point) 
+            *code_point = cp;
+
+        return UTF8_OK;
     }
 
     template <typename octet_iterator>
     utf_error get_sequence_3(octet_iterator& it, octet_iterator end, uint32_t* code_point)
     {
-        utf_error ret_code = NOT_ENOUGH_ROOM;
+        if (it == end)
+            return NOT_ENOUGH_ROOM;
+            
+        uint32_t cp = utf8::internal::mask8(*it);
 
-        if (it != end) {
-            uint32_t cp = utf8::internal::mask8(*it);
-            if (++it != end) {
-                if (utf8::internal::is_trail(*it)) {
-                    cp = ((cp << 12) & 0xffff) + ((utf8::internal::mask8(*it) << 6) & 0xfff);
-                    if (++it != end) {
-                        if (utf8::internal::is_trail(*it)) {
-                            cp += (*it) & 0x3f;
+        UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-                            if (code_point)
-                                *code_point = cp;
-                            ret_code = UTF8_OK;
-                        }
-                        else 
-                            ret_code = INCOMPLETE_SEQUENCE;
-                    }
-                    else
-                        ret_code = NOT_ENOUGH_ROOM;
-                }
-                else
-                    ret_code = INCOMPLETE_SEQUENCE;
-            }
-            else
-                ret_code = NOT_ENOUGH_ROOM;
-        }
+        cp = ((cp << 12) & 0xffff) + ((utf8::internal::mask8(*it) << 6) & 0xfff);
 
-        return ret_code;
+        UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
+
+        cp += (*it) & 0x3f;
+
+        if (code_point)
+            *code_point = cp;
+
+        return UTF8_OK;
     }
 
     template <typename octet_iterator>
     utf_error get_sequence_4(octet_iterator& it, octet_iterator end, uint32_t* code_point)
     {
-        utf_error ret_code = NOT_ENOUGH_ROOM;
+        if (it == end)
+           return NOT_ENOUGH_ROOM;
 
-        if (it != end) {
-            uint32_t cp = utf8::internal::mask8(*it);
-            if (++it != end) {
-                if (utf8::internal::is_trail(*it)) {
-                    cp = ((cp << 18) & 0x1fffff) + ((utf8::internal::mask8(*it) << 12) & 0x3ffff);
-                    if (++it != end) {
-                        if (utf8::internal::is_trail(*it)) {
-                            cp += (utf8::internal::mask8(*it) << 6) & 0xfff;
-                            if (++it != end) {
-                                if (utf8::internal::is_trail(*it)) {
-                                    cp += (*it) & 0x3f;
+        uint32_t cp = utf8::internal::mask8(*it);
 
-                                    if (code_point)
-                                        *code_point = cp;
-                                    ret_code = UTF8_OK;
-                                }
-                                else
-                                    ret_code = INCOMPLETE_SEQUENCE;
-                            }
-                            else
-                                ret_code = NOT_ENOUGH_ROOM;
-                        }
-                        else
-                            ret_code = INCOMPLETE_SEQUENCE;
-                    }
-                    else
-                        ret_code = NOT_ENOUGH_ROOM;
-                }
-                else 
-                    ret_code = INCOMPLETE_SEQUENCE;
-            }
-            else
-                ret_code = NOT_ENOUGH_ROOM;
-        }
+        UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        return ret_code;
+        cp = ((cp << 18) & 0x1fffff) + ((utf8::internal::mask8(*it) << 12) & 0x3ffff);
+
+        UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
+
+        cp += (utf8::internal::mask8(*it) << 6) & 0xfff;
+
+        UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
+
+        cp += (*it) & 0x3f;
+
+        if (code_point)
+            *code_point = cp;
+
+        return UTF8_OK;
     }
+
+    #undef UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR
 
     template <typename octet_iterator>
     utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t* code_point)
@@ -258,13 +239,13 @@ namespace internal
         uint32_t cp = 0;
         // Determine the sequence length based on the lead octet
         typedef typename std::iterator_traits<octet_iterator>::difference_type octet_difference_type;
-        octet_difference_type length = utf8::internal::sequence_length(it);
-        if (length == 0)
-            return INVALID_LEAD;
+        const octet_difference_type length = utf8::internal::sequence_length(it);
 
-        // Now that we have a valid sequence length, get trail octets and calculate the code point
+        // Get trail octets and calculate the code point
         utf_error err = UTF8_OK;
         switch (length) {
+            case 0: 
+                return INVALID_LEAD;
             case 1:
                 err = utf8::internal::get_sequence_1(it, end, &cp);
                 break;
