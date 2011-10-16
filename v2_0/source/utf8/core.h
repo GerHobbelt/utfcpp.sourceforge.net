@@ -150,79 +150,69 @@ namespace internal
 
     /// get_sequence_x functions decode utf-8 sequences of the length x
     template <typename octet_iterator>
-    utf_error get_sequence_1(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    utf_error get_sequence_1(octet_iterator& it, octet_iterator end, uint32_t& code_point)
     {
         if (it == end)
             return NOT_ENOUGH_ROOM;
 
-	if (code_point)
-            *code_point = utf8::internal::mask8(*it);
+        code_point = utf8::internal::mask8(*it);
 
         return UTF8_OK;
     }
 
     template <typename octet_iterator>
-    utf_error get_sequence_2(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    utf_error get_sequence_2(octet_iterator& it, octet_iterator end, uint32_t& code_point)
     {
         if (it == end) 
             return NOT_ENOUGH_ROOM;
         
-        uint32_t cp = utf8::internal::mask8(*it);
+        code_point = utf8::internal::mask8(*it);
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
-
-        if (code_point) 
-            *code_point = cp;
+        code_point = ((code_point << 6) & 0x7ff) + ((*it) & 0x3f);
 
         return UTF8_OK;
     }
 
     template <typename octet_iterator>
-    utf_error get_sequence_3(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    utf_error get_sequence_3(octet_iterator& it, octet_iterator end, uint32_t& code_point)
     {
         if (it == end)
             return NOT_ENOUGH_ROOM;
             
-        uint32_t cp = utf8::internal::mask8(*it);
+        code_point = utf8::internal::mask8(*it);
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        cp = ((cp << 12) & 0xffff) + ((utf8::internal::mask8(*it) << 6) & 0xfff);
+        code_point = ((code_point << 12) & 0xffff) + ((utf8::internal::mask8(*it) << 6) & 0xfff);
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        cp += (*it) & 0x3f;
-
-        if (code_point)
-            *code_point = cp;
+        code_point += (*it) & 0x3f;
 
         return UTF8_OK;
     }
 
     template <typename octet_iterator>
-    utf_error get_sequence_4(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    utf_error get_sequence_4(octet_iterator& it, octet_iterator end, uint32_t& code_point)
     {
         if (it == end)
            return NOT_ENOUGH_ROOM;
 
-        uint32_t cp = utf8::internal::mask8(*it);
+        code_point = utf8::internal::mask8(*it);
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        cp = ((cp << 18) & 0x1fffff) + ((utf8::internal::mask8(*it) << 12) & 0x3ffff);
+        code_point = ((code_point << 18) & 0x1fffff) + ((utf8::internal::mask8(*it) << 12) & 0x3ffff);
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        cp += (utf8::internal::mask8(*it) << 6) & 0xfff;
+        code_point += (utf8::internal::mask8(*it) << 6) & 0xfff;
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        cp += (*it) & 0x3f;
-
-        if (code_point)
-            *code_point = cp;
+        code_point += (*it) & 0x3f;
 
         return UTF8_OK;
     }
@@ -247,16 +237,16 @@ namespace internal
             case 0: 
                 return INVALID_LEAD;
             case 1:
-                err = utf8::internal::get_sequence_1(it, end, &cp);
+                err = utf8::internal::get_sequence_1(it, end, cp);
                 break;
             case 2:
-                err = utf8::internal::get_sequence_2(it, end, &cp);
+                err = utf8::internal::get_sequence_2(it, end, cp);
             break;
             case 3:
-                err = utf8::internal::get_sequence_3(it, end, &cp);
+                err = utf8::internal::get_sequence_3(it, end, cp);
             break;
             case 4:
-                err = utf8::internal::get_sequence_4(it, end, &cp);
+                err = utf8::internal::get_sequence_4(it, end, cp);
             break;
         }
 
