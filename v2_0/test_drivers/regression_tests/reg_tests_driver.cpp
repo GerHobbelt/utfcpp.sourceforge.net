@@ -22,6 +22,9 @@ inline void check_impl (bool condition, const char* file, int line)
 // Release 2.2.2
 #include "r2_2_2/basic_functionality.h"
 
+// Release 2.3.1
+#include "r2_3_1/basic_functionality.h"
+
 int main()
 {
 // Release 1.0 Beta 1
@@ -44,4 +47,8 @@ int main()
 //r2_2_2/basic_functionality.h
     id_2852872();
     id_2857454();
+
+// Release 2.3.1
+// r2_3_1/basic_functionality.h
+    id_3414834();
 }
