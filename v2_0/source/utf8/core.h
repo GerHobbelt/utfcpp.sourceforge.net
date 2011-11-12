@@ -220,7 +220,7 @@ namespace internal
     #undef UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR
 
     template <typename octet_iterator>
-    utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t* code_point)
+    utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t& code_point)
     {
         // Save the original value of it so we can go back in case of failure
         // Of course, it does not make much sense with i.e. stream iterators
@@ -255,8 +255,7 @@ namespace internal
             if (utf8::internal::is_code_point_valid(cp)) {
                 if (!utf8::internal::is_overlong_sequence(cp, length)){
                     // Passed! Return here.
-                    if (code_point)
-                        *code_point = cp;
+                    code_point = cp;
                     ++it;
                     return UTF8_OK;
                 }
@@ -274,7 +273,8 @@ namespace internal
 
     template <typename octet_iterator>
     inline utf_error validate_next(octet_iterator& it, octet_iterator end) {
-        return utf8::internal::validate_next(it, end, 0);
+        uint32_t ignored;
+        return utf8::internal::validate_next(it, end, ignored);
     }
 
 } // namespace internal
